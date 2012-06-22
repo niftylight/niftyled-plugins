@@ -63,16 +63,16 @@ struct priv
  * to a new value. By returning NFT_SUCCESS the new value
  * is accepted. NFT_FAILURE can be returned if value is invalid.
  */
-NftResult _set_foo(LedSettings *c, NftSettingsNode *n)
+NftResult _set_foo(LedPrefs *c, LedPrefsNode *n)
 {
         int baz;
-        if(!nft_settings_node_prop_int_get(n, "baz", &baz))
+        if(!nft_prefs_node_prop_int_get(n, "baz", &baz))
                 return NFT_FAILURE;
         
         NFT_LOG(L_DEBUG, "Foo property \"baz\" set to: %d", baz);
 
         char *bar;
-        if(!(bar = nft_settings_node_prop_string_get(n, "bar")))
+        if(!(bar = nft_prefs_node_prop_string_get(n, "bar")))
                 return NFT_FAILURE;
         
         NFT_LOG(L_DEBUG, "Foo property \"bar\" set to: \"%s\"", bar);
@@ -85,22 +85,22 @@ NftResult _set_foo(LedSettings *c, NftSettingsNode *n)
  * - this will be called if something wants to read the value
  * of this property. 
  */
-static NftSettingsNode *_get_foo(LedSettings *conf, LedHardwarePlugin *plugin, void *ptr)
+static LedPrefsNode *_get_foo(LedPrefs *conf, LedHardwarePlugin *plugin, void *ptr)
 {
-        NftSettingsNode *n;
-        if(!(n = nft_settings_node_new("foo")))
+        LedPrefsNode *n;
+        if(!(n = nft_prefs_node_alloc("foo")))
                 return NFT_FAILURE;
 
-        if(!nft_settings_node_prop_string_set(n, "bar", "foobar"))
+        if(!nft_prefs_node_prop_string_set(n, "bar", "foobar"))
                 goto _gf_error;
         
-        if(!nft_settings_node_prop_int_set(n, "baz", 256))
+        if(!nft_prefs_node_prop_int_set(n, "baz", 256))
                 goto _gf_error;
         
         return n;
 
 _gf_error:
-        nft_settings_node_destroy(n);
+        nft_prefs_node_free(n);
         return NULL;
 }
 
@@ -129,19 +129,20 @@ static NftResult _init(void **privdata, LedHardware *h)
         /* save our hardware descriptor */
         p->hw = h;
 
-        
+	/** register a new prefs-class for this plugin */
+    	
         /** 
          * settings-property demo: register function to context that "sets"
          * a plugin-specific property
          */
-	if(!(nft_settings_func_to_obj_set(led_settings_context(), led_hardware_get_propname(h, "foo"), (NftSettingsToObjFunc *) _set_foo, TRUE)))
-		return NFT_FAILURE;
+	//~ if(!(nft_settings_func_to_obj_set(led_settings_context(), led_hardware_get_propname(h, "foo"), (NftSettingsToObjFunc *) _set_foo, TRUE)))
+		//~ return NFT_FAILURE;
         /**
          * settings-property demo: register function to plugin, that "gets" 
          * a plugin-specific property 
          */
-	if(!(nft_settings_func_from_obj_set(led_settings_context(), led_hardware_get_plugin(h), (NftSettingsFromObjFunc *) _get_foo)))
-		return NFT_FAILURE;
+	//~ if(!(nft_settings_func_from_obj_set(led_settings_context(), led_hardware_get_plugin(h), (NftSettingsFromObjFunc *) _get_foo)))
+		//~ return NFT_FAILURE;
 
 
         
@@ -159,8 +160,8 @@ static void _deinit(void *privdata)
         struct priv *p = privdata;
         
         /** unregister or settings-handlers */
-        nft_settings_func_to_obj_unset(led_settings_context(), led_hardware_get_propname(p->hw, "foo"));
-        nft_settings_func_from_obj_unset(led_settings_context(), led_hardware_get_plugin(p->hw));
+        //~ nft_settings_func_to_obj_unset(led_settings_context(), led_hardware_get_propname(p->hw, "foo"));
+        //~ nft_settings_func_from_obj_unset(led_settings_context(), led_hardware_get_plugin(p->hw));
 }
 
 
@@ -211,9 +212,9 @@ static void _hw_deinit(void *privdata)
 
 /**
  * plugin getter - this will be called if core wants to get stuff from the plugin
- * @note you don't need to implement a getter for every LedPluginObj
+ * @note you don't need to implement a getter for every single LedPluginParam
  */
-NftResult _get_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
+NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
 {
         struct priv *p = privdata;
         
@@ -222,20 +223,38 @@ NftResult _get_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
         {
                 case LED_HW_ID:
                 {
+		    	NFT_LOG(L_INFO, "Getting id of dummy hardware (%s)",
+			            data->id);
+		    
                         data->id = p->id;
+		    
                         return NFT_SUCCESS;
                 }
 
                 case LED_HW_LEDCOUNT:
                 {
+		    	NFT_LOG(L_INFO, "Getting dummy hardware ledcount (%d LEDs)",
+			            data->ledcount);
+		    
                         data->ledcount = p->ledcount;
+		    		    
                         return NFT_SUCCESS;
                 }
-                        
+
+		case LED_HW_GAIN:
+	    	{
+			NFT_LOG(L_INFO, "Getting gain of LED %d (0)",
+			        data->gain.pos);
+			
+			data->gain.value = 0;
+						
+			return NFT_SUCCESS;
+		}
+		
                 default:
                 {
                         NFT_LOG(L_ERROR, "Request to get unhandled object \"%s\" from plugin",
-                                        led_hardware_get_plugin_obj_name(o));
+                                        led_hardware_get_plugin_param_name(o));
                         return NFT_FAILURE;
                 }
         }
@@ -246,9 +265,9 @@ NftResult _get_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
 
 /**
  * plugin setter - this will be called if core wants to set stuff
- * @note you don't need to implement a setter for every LedPluginObj
+ * @note you don't need to implement a setter for every LedPluginParam
  */
-NftResult _set_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
+NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
 {
         struct priv *p = privdata;
         

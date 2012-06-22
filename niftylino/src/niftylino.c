@@ -393,7 +393,7 @@ static void _usb_deinit(void *privdata)
 /**
  * plugin getter - this will be called if core wants to get stuff
  */
-NftResult _get_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
+NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
 {
         Niftylino *n = privdata;
         
@@ -426,7 +426,7 @@ NftResult _get_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
 /**
  * plugin setter - this will be called if core wants to set stuff
  */
-NftResult _set_handler(void *privdata, LedPluginObj o, LedPluginObjData *data)
+NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
 {
         Niftylino *n = privdata;
         
