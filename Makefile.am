@@ -12,9 +12,4 @@ AM_LDFLAGS =
 
 
 # subdirs to build
-SUBDIRS = src
-
-# compile tests for "make check"? (configure argument "--disable-tests")
-if RUN_TESTS
-    SUBDIRS += tests
-endif
+SUBDIRS = example niftylino

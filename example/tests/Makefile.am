@@ -1,19 +1,15 @@
-#ifdef DEBUG
-DEBUG_FLAGS = -ggdb -O0
-#endif
-
-my_cflags = -I$(top_srcdir)/src -I. $(niftyled_CFLAGS) $(DEBUG_FLAGS)
-my_ldflags = $(niftyled_LIBS)
+# libniftyled Makefile.am - v0.3 - Daniel Hiepler <daniel@niftylight.de> 
 
 
-bin_PROGRAMS = generic
+tests_CFLAGS_PRIV = -Wall -g -O0 $(niftyled_CFLAGS) $(DEBUG_FLAGS)
+tests_LDFLAGS_PRIV = -Wall
+tests_LDADD_PRIV = ../src/$(PACKAGE).la $(niftyled_LIBS)
 
-# test-target
-TESTS = $(bin_PROGRAMS)
-TESTS_ENVIRONMENT = "$(top_srcdir)/tests/tests.env"
-EXTRA_DIST = tests.env
 
+check_PROGRAMS = generic
+TESTS = $(check_PROGRAMS)
 
 generic_SOURCES = generic.c
-generic_CFLAGS = $(my_cflags)
-generic_LDADD = $(my_ldflags)
+generic_CFLAGS = $(tests_CFLAGS_PRIV)
+generic_LDFLAGS = $(tests_LDFLAGS_PRIV)
+generic_LDADD = $(tests_LDADD_PRIV)

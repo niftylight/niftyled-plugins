@@ -54,55 +54,15 @@ struct priv
         LedHardware *            hw;
         char                     id[1024];
         LedCount                 ledcount;
+        /* custom string property */
+        char                     foo[64];
+        /* custom int property */
+        int                      bar;
 };
 
 
-/**
- * setter for plugin-specific property called "foo"
- * - this will be called if this property has been set
- * to a new value. By returning NFT_SUCCESS the new value
- * is accepted. NFT_FAILURE can be returned if value is invalid.
- */
-NftResult _set_foo(LedPrefs *c, LedPrefsNode *n)
-{
-        int baz;
-        if(!nft_prefs_node_prop_int_get(n, "baz", &baz))
-                return NFT_FAILURE;
-        
-        NFT_LOG(L_DEBUG, "Foo property \"baz\" set to: %d", baz);
 
-        char *bar;
-        if(!(bar = nft_prefs_node_prop_string_get(n, "bar")))
-                return NFT_FAILURE;
-        
-        NFT_LOG(L_DEBUG, "Foo property \"bar\" set to: \"%s\"", bar);
-        
-        return NFT_SUCCESS;
-}
 
-/**
- * getter for plugin-specific property called "foo"
- * - this will be called if something wants to read the value
- * of this property. 
- */
-static LedPrefsNode *_get_foo(LedPrefs *conf, LedHardwarePlugin *plugin, void *ptr)
-{
-        LedPrefsNode *n;
-        if(!(n = nft_prefs_node_alloc("foo")))
-                return NFT_FAILURE;
-
-        if(!nft_prefs_node_prop_string_set(n, "bar", "foobar"))
-                goto _gf_error;
-        
-        if(!nft_prefs_node_prop_int_set(n, "baz", 256))
-                goto _gf_error;
-        
-        return n;
-
-_gf_error:
-        nft_prefs_node_free(n);
-        return NULL;
-}
 
 
 /**
@@ -129,21 +89,18 @@ static NftResult _init(void **privdata, LedHardware *h)
         /* save our hardware descriptor */
         p->hw = h;
 
-	/** register a new prefs-class for this plugin */
-    	
-        /** 
-         * settings-property demo: register function to context that "sets"
-         * a plugin-specific property
+        /* defaults */
+        strncpy(p->foo, "default", sizeof(p->foo)-1);
+        p->bar = 42;
+        
+	/** 
+         * register some dynamic properties for this plugin - those will be
+         * set/read in the _get/set_handler() from this plugin
          */
-	//~ if(!(nft_settings_func_to_obj_set(led_settings_context(), led_hardware_get_propname(h, "foo"), (NftSettingsToObjFunc *) _set_foo, TRUE)))
-		//~ return NFT_FAILURE;
-        /**
-         * settings-property demo: register function to plugin, that "gets" 
-         * a plugin-specific property 
-         */
-	//~ if(!(nft_settings_func_from_obj_set(led_settings_context(), led_hardware_get_plugin(h), (NftSettingsFromObjFunc *) _get_foo)))
-		//~ return NFT_FAILURE;
-
+    	if(!led_hardware_plugin_prop_register(h, "foo", LED_HW_CUSTOM_PROP_STRING))
+                return NFT_FAILURE;
+        if(!led_hardware_plugin_prop_register(h, "bar", LED_HW_CUSTOM_PROP_INT))
+                return NFT_FAILURE;
 
         
         return NFT_SUCCESS;
@@ -160,8 +117,9 @@ static void _deinit(void *privdata)
         struct priv *p = privdata;
         
         /** unregister or settings-handlers */
-        //~ nft_settings_func_to_obj_unset(led_settings_context(), led_hardware_get_propname(p->hw, "foo"));
-        //~ nft_settings_func_from_obj_unset(led_settings_context(), led_hardware_get_plugin(p->hw));
+        led_hardware_plugin_prop_unregister(p->hw, "foo");
+        led_hardware_plugin_prop_unregister(p->hw, "bar");
+        
 }
 
 
@@ -250,11 +208,36 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 						
 			return NFT_SUCCESS;
 		}
-		
+
+                /* handle dynamic custom properties - 
+                   we have to fill in data->custom.value.[s|i|f] and
+                   data->custom.valuesize */
+                case LED_HW_CUSTOM_PROP:
+                {
+                        /** foo? */
+                        if(strcmp(data->custom.name, "foo") == 0)
+                        {
+                                data->custom.value.s = p->foo;
+                                data->custom.valuesize = sizeof(p->foo);
+                                
+                                return NFT_SUCCESS;
+                        }
+                        else if(strcmp(data->custom.name, "bar") == 0)
+                        {
+                                data->custom.value.i = p->bar;
+                                data->custom.valuesize = sizeof(p->bar);
+                        }
+                        else
+                        {
+                                NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
+                                return NFT_FAILURE;
+                        }
+                }
+                        
                 default:
                 {
-                        NFT_LOG(L_ERROR, "Request to get unhandled object \"%s\" from plugin",
-                                        led_hardware_get_plugin_param_name(o));
+                        NFT_LOG(L_ERROR, "Request to get unhandled object \"%d\" from plugin",
+                                        o);
                         return NFT_FAILURE;
                 }
         }
@@ -286,6 +269,45 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                         return NFT_SUCCESS;
                 }
 
+                 /* handle dynamic custom properties - 
+                   we can read out data->custom.value.[s|i|f] and
+                   data->custom.valuesize */
+                case LED_HW_CUSTOM_PROP:
+                {
+                        /** foo? */
+                        if(strcmp(data->custom.name, "foo") == 0)
+                        {
+                                /* check valuesize */
+                                if(data->custom.valuesize > sizeof(p->foo))
+                                {
+                                        NFT_LOG(L_WARNING, "value of \"foo\" truncated. Continuing.");
+                                }
+
+                                /* do some sanity checks. Return NFT_FAILURE if they fail */
+                                /* ... */
+                                
+                                /* copy new string to our buffer */
+                                strncpy(p->foo, data->custom.value.s, sizeof(p->foo)-1);
+                                p->foo[sizeof(p->foo)-1] = '\0';
+
+                                NFT_LOG(L_INFO, "Set \"foo\" to \"%s\"", p->foo);
+                                
+                                return NFT_SUCCESS;
+                        }
+                        else if(strcmp(data->custom.name, "bar") == 0)
+                        {
+                                /* set new value */
+                                p->bar = data->custom.value.i;
+
+                                NFT_LOG(L_INFO, "Set \"bar\" to %d", p->bar);
+                        }
+                        else
+                        {
+                                NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
+                                return NFT_FAILURE;
+                        }
+                }
+                        
                 default:
                 {
                         return NFT_SUCCESS;
