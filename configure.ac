@@ -50,7 +50,7 @@ AC_SUBST(niftyled_LIBS)
 
 PKG_CHECK_MODULES(libusb, \
     [libusb], \
-    [AC_MSG_INFO([libusb found, compiling USB plugins]) ; NL_PLUGIN_NIFTYLINO=true], \
+    [echo "libusb found: compiling USB plugins" ; NL_PLUGIN_NIFTYLINO=true], \
     [AC_MSG_ERROR([You need libusb + development headers installed]) ; NL_PLUGIN_NIFTYLINO=true])
 AC_SUBST(NL_PLUGIN_EXAMPLE)
 AC_SUBST(NL_PLUGIN_NIFTYLINO)
@@ -126,7 +126,7 @@ AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
 
 AC_ARG_ENABLE(
 	example-plugin,
-	[  --with-example-plugin         Build dummy plugin ],
+	[  --enable-example-plugin         Build dummy plugin ],
 	[ NL_PLUGIN_EXAMPLE=false ],
 	[ NL_PLUGIN_EXAMPLE=true])
 AM_CONDITIONAL(NL_PLUGIN_EXAMPLE, test x$example-plugin = xtrue)
@@ -134,7 +134,7 @@ AM_CONDITIONAL(NL_PLUGIN_EXAMPLE, test x$example-plugin = xtrue)
 
 AC_ARG_ENABLE(
 	niftylino-plugin,
-	[  --with-niftylino-plugin         Build niftylino plugin ],
+	[  --enable-niftylino-plugin         Build niftylino plugin ],
 	[ NL_PLUGIN_NIFTYLINO=false ],
 	[ NL_PLUGIN_NIFTYLINO=true])
 AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$niftylino-plugin = xtrue)

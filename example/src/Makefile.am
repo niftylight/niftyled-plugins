@@ -25,21 +25,20 @@ INCLUDE_DIRS = \
 lib_LTLIBRARIES=dummy-hardware.la
 
 # sources
-lib@PACKAGE@_la_SOURCES = dummy.c
+dummy_hardware_la_SOURCES = \
+	dummy.c
 
 # cflags
-lib@PACKAGE@_la_CFLAGS = \
+dummy_hardware_la_CFLAGS = \
 	-Wall $(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
 
 # link in additional libraries
-lib@PACKAGE@_la_LIBADD = \
+dummy_hardware_la_LIBADD = \
 	$(niftyled_LIBS) $(libusb_LIBS)
 
 # linker flags
-lib@PACKAGE@_la_LDFLAGS = \
+dummy_hardware_la_LDFLAGS = \
 	-Wall -no-undefined -no-allow-shlib-undefined \
-	-module \
-	-version-info @PACKAGE_API_CURRENT@:@PACKAGE_API_REVISION@:@PACKAGE_API_AGE@ \
-	-release @PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@.@PACKAGE_MICRO_VERSION@ \
-
+	-module -avoid-version
+	
 #endif

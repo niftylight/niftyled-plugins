@@ -21,15 +21,24 @@ INCLUDE_DIRS = \
 	
 
 
-h_sources = niftylino.h niftylino_usb.h
-c_sources = niftylino.c
-
+# target library
 lib_LTLIBRARIES=niftylino-hardware.la
 
-niftylino_hardware_la_SOURCES=$(h_sources) $(c_sources)
-niftylino_hardware_la_CFLAGS=-Wall $(niftyled_CFLAGS) $(libusb_CFLAGS) $(DEBUG_CFLAGS)
-niftylino_hardware_la_LIBADD=$(niftyled_LIBS) $(libusb_LIBS)
-niftylino_hardware_la_LDFLAGS= -module -avoid-version
+# sources
+niftylino_hardware_la_SOURCES = \
+	niftylino.c
 
+# cflags
+niftylino_hardware_la_CFLAGS = \
+	-Wall $(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
+
+# link in additional libraries
+niftylino_hardware_la_LIBADD = \
+	$(niftyled_LIBS) $(libusb_LIBS)
+
+# linker flags
+niftylino_hardware_la_LDFLAGS = \
+	-Wall -no-undefined -no-allow-shlib-undefined \
+	-module -avoid-version
 
 #endif
