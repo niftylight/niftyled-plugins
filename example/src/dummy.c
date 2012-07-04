@@ -182,7 +182,7 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                 case LED_HW_ID:
                 {
 		    	NFT_LOG(L_INFO, "Getting id of dummy hardware (%s)",
-			            data->id);
+			            p->id);
 		    
                         data->id = p->id;
 		    

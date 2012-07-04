@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
         if(!led_hardware_init(a, "*", 16, "RGB u8"))
         {
-                NFT_LOG(L_ERROR, "\tfailed to initialize hardware");
+                NFT_LOG(L_ERROR, "failed to initialize hardware");
                 return -1;
         }
 
