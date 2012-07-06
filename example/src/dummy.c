@@ -48,7 +48,7 @@
 #include "config.h"
 
 
-/** some properties of our "hardware" */
+/** private info of our "hardware" */
 struct priv
 {
         LedHardware *            hw;
@@ -68,13 +68,21 @@ struct priv
 /**
  * called upon plugin load
  *
- * @p privdata space for a private pointer.  Set it here and it will be passed 
- * to you back later (prefer this over static variables)
+ * You should:
+ * - do any non-hardware initialization/checking here 
+ * - register plugin properties
+ * - fill in "privdata" if you want to use a private pointer that's passed to
+ *   the plugin in subsequent calls.
+ *
+ * @param privdata space for a private pointer.  
+ * @param h LedHardware descriptor belonging to this plugin
+ * @result NFT_SUCCESS or NFT_FAILURE upon error
  */
 static NftResult _init(void **privdata, LedHardware *h)
 {
         NFT_LOG(L_INFO, "Initializing plugin...");
 
+	
         /* allocate private structure */
         struct priv *p;
         if(!(p = calloc(1,sizeof(struct priv))))
@@ -82,17 +90,20 @@ static NftResult _init(void **privdata, LedHardware *h)
                 NFT_LOG_PERROR("calloc");
                 return NFT_FAILURE;
         }
-        
+
+	
         /* register our config-structure */
         *privdata = p;
         
         /* save our hardware descriptor */
         p->hw = h;
 
+	
         /* defaults */
         strncpy(p->foo, "default", sizeof(p->foo)-1);
         p->bar = 42;
-        
+
+	
 	/** 
          * register some dynamic properties for this plugin - those will be
          * set/read in the _get/set_handler() from this plugin
@@ -108,7 +119,12 @@ static NftResult _init(void **privdata, LedHardware *h)
 
 
 /**
- * called upon plugin unload
+ * called upon plugin unload. Hardware will be deinitialized before that.
+ * 
+ * You should:
+ * - unregister all properties you registered before 
+ * - finally free all resources you needed 
+ *
  */
 static void _deinit(void *privdata)
 {
@@ -133,7 +149,7 @@ static NftResult _hw_init(void *privdata, const char *id)
 
         struct priv *p = privdata;
 
-        /* ... do check ... */
+        /* ... do checks ... */
         
         /* pixelformat supported? */
         const char *fmtstring = led_pixel_format_to_string(led_chain_get_format(
@@ -319,23 +335,9 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 
 
 /**
- * trigger hardware to show data
- *
- * - if you previously uploaded your data to your hardware, output it now to LEDs
- * - if you can't do this, try to send all data except last bit/value/... in 
- *   _send(). Then send last portion here
- * - if you can't do this, send all data here as quick as possible :)
- */
-NftResult _show(void *privdata)
-{
-        NFT_LOG(L_DEBUG, "Showing dummy data");
-        return NFT_SUCCESS;
-}
-
-
-/**
- * send data in chain to hardware (only use this if hardware doesn't show data right away
- * to avoid blanking)
+ * send data in chain to hardware (only use this if hardware doesn't show data right after
+ * data is received to avoid blanking. If the data is shown immediately, you have
+ * to transmit it in _show() 
  */
 NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 {
@@ -384,6 +386,24 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 }
 
 
+/**
+ * trigger hardware to show data
+ *
+ * - if you previously uploaded your data to your hardware, output it now to LEDs
+ * - if you can't do this, try to send all data except last bit/value/... in 
+ *   _send() so that sent data is not immediately visible. Then send last portion here
+ * - if you can't do this, send all data here as quick as possible :)
+ */
+NftResult _show(void *privdata)
+{
+        NFT_LOG(L_DEBUG, "Showing dummy data");
+        return NFT_SUCCESS;
+}
+
+
+
+
+
 /** descriptor of hardware-plugin passed to the library */
 LedHardwarePlugin hardware_descriptor =
 {
@@ -402,7 +422,7 @@ LedHardwarePlugin hardware_descriptor =
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2012",
         .description = "Dummy hardware plugin",
         .url = PACKAGE_URL,
         .id_example = "any printable string",
