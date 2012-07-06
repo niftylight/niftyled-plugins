@@ -135,7 +135,9 @@ static void _deinit(void *privdata)
         /** unregister or settings-handlers */
         led_hardware_plugin_prop_unregister(p->hw, "foo");
         led_hardware_plugin_prop_unregister(p->hw, "bar");
-        
+
+        /** free structure we allocated in _init() */
+        free(privdata);
 }
 
 
