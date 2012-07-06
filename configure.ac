@@ -50,12 +50,28 @@ AC_SUBST(niftyled_LIBS)
 
 PKG_CHECK_MODULES(libusb, \
     [libusb], \
-    [echo "libusb found: compiling USB plugins" ; NL_PLUGIN_NIFTYLINO=true], \
-    [AC_MSG_ERROR([You need libusb + development headers installed]) ; NL_PLUGIN_NIFTYLINO=true])
+    [echo "libusb found: compiling USB plugins" ; BUILD_USB_PLUGINS=true], \
+    [AC_MSG_ERROR([You need libusb + development headers installed]) ; BUILD_USB_PLUGINS=false])
 AC_SUBST(NL_PLUGIN_EXAMPLE)
 AC_SUBST(NL_PLUGIN_NIFTYLINO)
 AC_SUBST(libusb_CFLAGS)
 AC_SUBST(libusb_LIBS)
+
+
+# --------------------------------
+# decide about which plugins to compile
+# --------------------------------
+
+
+# dummy/example plugin
+NL_PLUGIN_EXAMPLE=true
+
+# build USB plugins?
+if test "$BUILD_USB_PLUGINS" == "true" ; then
+
+    # niftylino USB adapter
+    NL_PLUGIN_NIFTYLINO=true
+fi
 
 
 # --------------------------------
@@ -129,17 +145,22 @@ AC_ARG_ENABLE(
 	[  --enable-example-plugin         Build dummy plugin ],
 	[ NL_PLUGIN_EXAMPLE=false ],
 	[ NL_PLUGIN_EXAMPLE=true])
-AM_CONDITIONAL(NL_PLUGIN_EXAMPLE, test x$example-plugin = xtrue)
-
+AM_CONDITIONAL(NL_PLUGIN_EXAMPLE, test x$example-plugin = xtrue || test x$NL_PLUGIN_EXAMPLE = xtrue)
 
 AC_ARG_ENABLE(
 	niftylino-plugin,
 	[  --enable-niftylino-plugin         Build niftylino plugin ],
 	[ NL_PLUGIN_NIFTYLINO=false ],
 	[ NL_PLUGIN_NIFTYLINO=true])
-AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$niftylino-plugin = xtrue)
+AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$niftylino-plugin = xtrue || test x$NL_PLUGIN_NIFTYLINO = xtrue)
 
         
+# --------------------------------
+# Build string with plugins to build
+# --------------------------------
+if test x$example-plugin = xtrue || test x$NL_PLUGIN_EXAMPLE = xtrue ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
+if test x$niftylino-plugin = xtrue || test x$NL_PLUGIN_NIFTYLINO = xtrue ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
+
 
 # --------------------------------
 # Output
@@ -147,10 +168,31 @@ AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$niftylino-plugin = xtrue)
 AM_CONFIG_HEADER(config.h)      
 AC_CONFIG_FILES([ \
 	Makefile \
-	niftylino/Makefile \
-	niftylino/src/Makefile \
-	niftylino/tests/Makefile \
-	example/Makefile \
-	example/src/Makefile \
-	example/tests/Makefile])
+	plugins/Makefile \
+	plugins/niftylino/Makefile \
+	plugins/niftylino/src/Makefile \
+	plugins/niftylino/tests/Makefile \
+	plugins/example/Makefile \
+	plugins/example/src/Makefile \
+	plugins/example/tests/Makefile])
 AC_OUTPUT
+
+
+echo "
+Configure report:
+
+    Package.....................:  ${PACKAGE_STRING}
+    Description.................:  ${PACKAGE_DESCRIPTION}
+    Revision....................:  ${PACKAGE_GIT_VERSION}
+    URL.........................:  ${PACKAGE_URL}
+    Bugreports..................:  ${PACKAGE_BUGREPORT}
+
+    Install prefix..............:  ${prefix}
+    C compiler..................:  ${CC}
+    C++ compiler................:  ${CPP}
+    System CFLAGS...............:  ${CFLAGS}
+    System CXXFLAGS.............:  ${CXXFLAGS}
+    System LDFLAGS..............:  ${LDFLAGS}
+    
+    Building plugins............:  ${BUILD_PLUGINS}
+"

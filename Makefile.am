@@ -12,4 +12,4 @@ AM_LDFLAGS =
 
 
 # subdirs to build
-SUBDIRS = example niftylino
+SUBDIRS = plugins

@@ -1,6 +1,5 @@
 # libniftyled Makefile.am - v0.3 - Daniel Hiepler <daniel@niftylight.de> 
 
-#ifdef NL_PLUGIN_EXAMPLE
 
 
 # compile for debugging ?
@@ -18,27 +17,25 @@ libdir = @libdir@/niftyled-plugins
 # include dirs
 INCLUDE_DIRS = \
 	-I$(top_srcdir)
-
+	
 
 
 # target library
-lib_LTLIBRARIES=dummy-hardware.la
+lib_LTLIBRARIES=niftylino-hardware.la
 
 # sources
-dummy_hardware_la_SOURCES = \
-	dummy.c
+niftylino_hardware_la_SOURCES = \
+	niftylino.c
 
 # cflags
-dummy_hardware_la_CFLAGS = \
+niftylino_hardware_la_CFLAGS = \
 	-Wall $(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
 
 # link in additional libraries
-dummy_hardware_la_LIBADD = \
+niftylino_hardware_la_LIBADD = \
 	$(niftyled_LIBS) $(libusb_LIBS)
 
 # linker flags
-dummy_hardware_la_LDFLAGS = \
+niftylino_hardware_la_LDFLAGS = \
 	-Wall -no-undefined -no-allow-shlib-undefined \
 	-module -avoid-version
-	
-#endif
