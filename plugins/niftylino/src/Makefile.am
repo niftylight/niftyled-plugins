@@ -29,7 +29,7 @@ niftylino_hardware_la_SOURCES = \
 
 # cflags
 niftylino_hardware_la_CFLAGS = \
-	-Wall $(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
 
 # link in additional libraries
 niftylino_hardware_la_LIBADD = \
@@ -37,5 +37,5 @@ niftylino_hardware_la_LIBADD = \
 
 # linker flags
 niftylino_hardware_la_LDFLAGS = \
-	-Wall -no-undefined -no-allow-shlib-undefined \
+	-no-allow-shlib-undefined \
 	-module -avoid-version

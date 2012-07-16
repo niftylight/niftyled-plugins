@@ -5,10 +5,10 @@ ACLOCAL_AMFLAGS = -I m4
 
 
 # flags for all objects
-AM_CFLAGS = 
+AM_CFLAGS = -Wall -Wextra -Werror -Wno-undefined-parameter -Wno-missing-field-initializers
 AM_CPPFLAGS =
 AM_LIBS = 
-AM_LDFLAGS =
+AM_LDFLAGS = -Wall -no-undefined
 
 
 # subdirs to build

@@ -29,7 +29,7 @@ dummy_hardware_la_SOURCES = \
 
 # cflags
 dummy_hardware_la_CFLAGS = \
-	-Wall $(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
 
 # link in additional libraries
 dummy_hardware_la_LIBADD = \
@@ -37,5 +37,5 @@ dummy_hardware_la_LIBADD = \
 
 # linker flags
 dummy_hardware_la_LDFLAGS = \
-	-Wall -no-undefined -no-allow-shlib-undefined \
+	-no-allow-shlib-undefined \
 	-module -avoid-version
