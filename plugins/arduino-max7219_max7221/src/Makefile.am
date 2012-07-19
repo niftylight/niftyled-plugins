@@ -21,20 +21,21 @@ INCLUDE_DIRS = \
 
 
 # target library
-lib_LTLIBRARIES=artnet-hardware.la
+lib_LTLIBRARIES=arduino-max72xx-hardware.la
 
 # sources
-artnet_hardware_la_SOURCES = \
-	artnet.c
+arduino_max72xx_hardware_la_SOURCES = \
+	arduino_max72xx.c
 
 # cflags
-artnet_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libartnet_CFLAGS) $(OPT_CFLAGS)
+arduino_max72xx_hardware_la_CFLAGS = \
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(OPT_CFLAGS)
 
 # link in additional libraries
-artnet_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libartnet_LIBS)
+arduino_max72xx_hardware_la_LIBADD = \
+	$(niftyled_LIBS)
 
 # linker flags
-artnet_hardware_la_LDFLAGS = \
-	-no-allow-shlib-undefined -module -avoid-version
+arduino_max72xx_hardware_la_LDFLAGS = \
+	-no-allow-shlib-undefined \
+	-module -avoid-version
