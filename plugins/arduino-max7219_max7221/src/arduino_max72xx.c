@@ -117,6 +117,7 @@ NftResult ad_txPacket(struct priv *p, char opcode, char *data, char size)
 /** send buffer to arduino */
 NftResult ad_sendBuffer(struct priv *p, char *buf, char size)
 {
+	NFT_LOG(L_NOISY, "Uploading to arduino: %d bytes", size);
 	return ad_txPacket(p, OP_UPLOAD, buf, size);
 }
 
@@ -511,11 +512,25 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 		if(buffer[i] >= p->threshold)
 			packed[i/8] |= 1;
 
-		packed[i/8] <<= 1;
+		packed[i/8] = packed[i/8] << 1;
+		NFT_LOG(L_DEBUG, "0x%x ", buffer[i]);
 	}
 
+	NFT_LOG(L_DEBUG, "Packed: %x %x %x %x %x %x %x %x", packed[0], packed[1], packed[2], packed[3],
+  packed[4], packed[5], packed[6], packed[7]); 
+
+	packed[0] = 0xff;
+	packed[1] = 0xff;
+	packed[2] = 0xff;
+	packed[3] = 0xff;
+	packed[4] = 0xff;
+	packed[5] = 0xff;
+	packed[6] = 0xff;
+	packed[7] = 0xff;
+	packed[8] = 0xff;
+
 	/* send buffer */
-	ad_sendBuffer(p, packed, (p->ledcount%64 == 0 ? p->ledcount/64 : p->ledcount/8+1));
+	ad_sendBuffer(p, packed, (p->ledcount%8 == 0 ? p->ledcount/8 : p->ledcount/8+1));
                 
         return NFT_SUCCESS;
 }

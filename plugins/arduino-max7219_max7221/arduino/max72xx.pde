@@ -49,6 +49,7 @@
  * This is is based on the LedControl library from Eberhard Fahle 
  */
 
+#include <stdarg.h>
 
 #if (ARDUINO >= 100)
 #include <Arduino.h>
@@ -60,39 +61,34 @@
 
 /** pin definitions */
 #define PIN_DATA	10
-#define PIN_CLOCK	11
-#define PIN_CS		12
+#define PIN_CLOCK	12
+#define PIN_CS		11
 
-#define DEBUG
+#define DEBUG 
 
 /******************************************************************************/
 
-#idfef DEBUG
-#define LOG(a) Serial.println(a)
-#else
-#define LOG(a) {}
-#endif
 
 
 /** opcodes for the MAX7221 and MAX7219 */
 enum
 {
-	OP_NOOP = 0,
-	OP_DIGIT0,
-	OP_DIGIT1,
-	OP_DIGIT2,
-	OP_DIGIT3,
-	OP_DIGIT4,
-	OP_DIGIT5,
-	OP_DIGIT6,
-	OP_DIGIT7,
-	OP_DECODEMODE,
-	OP_INTENSITY,
-	OP_SCANLIMIT,
-	OP_SHUTDOWN,
-	OP_RESERVED1,
-	OP_RESERVED2,
-	OP_DISPLAYTEST,
+  OP_NOOP = 0,
+  OP_DIGIT0,
+  OP_DIGIT1,
+  OP_DIGIT2,
+  OP_DIGIT3,
+  OP_DIGIT4,
+  OP_DIGIT5,
+  OP_DIGIT6,
+  OP_DIGIT7,
+  OP_DECODEMODE,
+  OP_INTENSITY,
+  OP_SCANLIMIT,
+  OP_SHUTDOWN,
+  OP_RESERVED1,
+  OP_RESERVED2,
+  OP_DISPLAYTEST,
 };
 
 
@@ -100,260 +96,312 @@ enum
 /** some private data */
 struct priv
 {
-	/* amount of devices configured (0-8) */
-	char n_devices;
-	/* Data is shifted out of this pin */
-	int SPI_MOSI;
-	/* The clock is signaled on this pin */
-	int SPI_CLK;
-	/* This one is driven LOW for chip selectzion */
-	int SPI_CS;
-	/* The array for shifting the data to the devices */
-    	char spidata[16];
-	/* We keep track of the led-status for all 8 devices in this array */
-    	char status[64];
-}priv;
+  /* amount of devices configured (0-8) */
+  char n_devices;
+  /* Data is shifted out of this pin */
+  int SPI_MOSI;
+  /* The clock is signaled on this pin */
+  int SPI_CLK;
+  /* This one is driven LOW for chip selectzion */
+  int SPI_CS;
+  /* The array for shifting the data to the devices */
+  char spidata[16];
+  /* We keep track of the led-status for all 8 devices in this array */
+  char status[64];
+}
+priv;
 
+
+
+#ifdef DEBUG
+void LOG(char *fmt, ... )
+{
+  char tmp[128]; // resulting string limited to 128 chars
+  va_list args;
+  va_start (args, fmt );
+  vsnprintf(tmp, 128, fmt, args);
+  va_end (args);
+  Serial.println(tmp);
+}
+#else
+void LOG(char *fmt, ...) {
+}
+#endif
 
 
 /** send data+opcode to MAX72xx chain */
-void spiTransfer(char addr, char opcode, char data) 
+void spiTransfer(char addr, volatile char opcode, volatile char data) 
 {
-	if(addr < 0 || addr >= priv.n_devices)
-		return;
-	
-	/* send data last-byte first, start at offset */
-	char offset=addr*2;
+  if(addr < 0 || addr >= priv.n_devices)
+    return;
 
-	/* clear buffer */
-	for(char i=0; i < priv.n_devices*2; i++)
-	    	spidata[i]=0;
-	    
-	/* put our device data into the array */
-	spidata[offset+1] = opcode;
-	spidata[offset] = data;
-	    
-	/* enable the line */
-	digitalWrite(priv.spi_cs, LOW);
-	    
-	/* Now shift out the data */
-	for(char i = priv.n_devices*2; i>0; i--)
-	    	shiftOut(priv.spi_mosi, priv.spi_clk, MSBFIRST, spidata[i-1]);
-	    
-	/* latch the data onto the display */
-	digitalWrite(priv.spi_cs,HIGH);
+  /* send data last-byte first, start at offset */
+  int offset = (int) addr*2;
+
+  /* clear buffer */
+  for(char i=0; i < priv.n_devices*2; i++)
+    priv.spidata[i]=0;
+
+  /* put our device data into the array */
+  priv.spidata[offset+1] = opcode;
+  priv.spidata[offset] = data;
+
+  /* enable the line */
+  digitalWrite(priv.SPI_CS, LOW);
+
+  /* Now shift out the data */
+  for(char i = priv.n_devices*2; i>0; i--)
+  {
+        //LOG("0x%x", priv.spidata[i-1]);
+        shiftOut(priv.SPI_MOSI, priv.SPI_CLK, MSBFIRST, priv.spidata[i-1]);
+  }
+
+  /* latch the data onto the display */
+  digitalWrite(priv.SPI_CS,HIGH);
 }   
 
 
 /** switch chip into shutdown mode */
 void shutdown(char addr, bool b) 
 {
-	LOG(b ? ("Shutting down chip %d", addr) : ("Waking up chip %d", addr));
-		
-	if(addr < 0 || addr >= priv.n_devices)
-	{
-		LOG("Illegal address: %d", addr);
-		return;
-	}
-	
-    	spiTransfer(addr, OP_SHUTDOWN, b ? 0 : 1);
+  b ? LOG("Waking up chip %d", addr) : LOG("Shutting down chip %d", addr);
+
+  if(addr < 0 || addr >= priv.n_devices)
+  {
+    LOG("Illegal address: %d", addr);
+    return;
+  }
+
+  spiTransfer(addr, OP_SHUTDOWN, b ? 0 : 1);
 }
 
 
 /** set chip to this scan limit (0-8) */
 void setScanLimit(char addr, char limit) 
 {
-	if(addr < 0 || addr >= priv.n_devices)
-	{
-		LOG("Illegal address: %d", addr);
-		return;
-	}
+  if(addr < 0 || addr >= priv.n_devices)
+  {
+    LOG("Illegal address: %d", addr);
+    return;
+  }
 
-	LOG("Setting scanLimit to %d", limit);
-	
-    	if(limit>=0 || limit<8)
-    		spiTransfer(addr, OP_SCANLIMIT,limit);
+  LOG("Setting scanLimit to %d", limit);
+
+  if(limit>=0 || limit<8)
+    spiTransfer(addr, OP_SCANLIMIT,limit);
 }
 
 
 /** set intensity/brightness/gain of this chip (0-16) */
 void setIntensity(char addr, char intensity) 
 {
-	if(addr < 0 || addr >= priv.n_devices)
-	{
-		LOG("Illegal address: %d", addr);
-		return;
-	}
+  if(addr < 0 || addr >= priv.n_devices)
+  {
+    LOG("Illegal address: %d",addr);
+    return;
+  }
 
-	LOG("Setting intensity to %d", intensity);
-	
-    	if(intensity>=0 || intensity<16)	
-		spiTransfer(addr, OP_INTENSITY,intensity);
+  LOG("Setting intensity to %d",intensity);
+
+  if(intensity>=0 || intensity<16)	
+    spiTransfer(addr, OP_INTENSITY,intensity);
 }
 
 
 /** upload buffer to display */
 void showBuffer()
 {
-	LOG("Showing buffer");
-	
-	char chip, row;
-	for(chip=0; chip < priv.n_devices; chip++)
-	{
-		for(row=0; row < 7; row++)
-		{
-			spiTransfer(chip, row+1, status[chip*8+row]);
-		}
-	}
+  LOG("Showing buffer");
+
+  char chip, row;
+  for(chip=0; chip < priv.n_devices; chip++)
+  {
+    for(row=0; row < 8; row++)
+    {
+      spiTransfer(chip, row+1, priv.status[chip*8+row]);
+    }
+  }
+}
+
+
+/** initialize one MAX72xx */
+void chipInit(int i)
+{
+  spiTransfer(i,OP_DISPLAYTEST,0);
+  /* scanlimit is set to max on startup */
+  setScanLimit(i,7);
+  /* set intensity to lowest on startup */
+  setIntensity(i, 8);
+  /* decode is done in source */
+  spiTransfer(i,OP_DECODEMODE,0);
+  /* wake up chip */
+  shutdown(i,false); 
 }
 
 
 /** OPCODES to control our arduino via USB */
 enum
 {
-	/** set intensity of LEDs */
-	LED_SET_GAIN,
-	/** set amount of connected chips */
-	LED_SET_CHIPCOUNT,
-	/** set scanlimit */
-	LED_SET_SCANLIMIT,
-	/** send previously received data to LEDs */
-	LED_LATCH,
-	/** receive pixel data */
-	LED_UPLOAD,
+  /** set intensity of LEDs */
+  LED_SET_GAIN = 0,
+  /** set amount of connected chips */
+  LED_SET_CHIPCOUNT,
+  /** set scanlimit */
+  LED_SET_SCANLIMIT,
+  /** send previously received data to LEDs */
+  LED_LATCH,
+  /** receive pixel data */
+  LED_UPLOAD,
 };
 
 
+/*****************************************************************************/
+
 /** receive a packet from USB host */
-void rxPacket(char opcode, char size)
+void rxPacket(char opcode, char ssize)
 {
-	LOG("Got packet, opcode: %d, size: %d", opcode, size);
-	
-	char tmp[64];	
-	if(size > 0)
-		Serial.readBytes(tmp, size < 64 ? size : 64)
 
-	/* handle various packet types */
-	switch(opcode)
-	{
-		case LED_SET_GAIN:
-		{			
-			char addr = tmp[0];
-			char intensity = tmp[1];
+  LOG("Got packet, opcode: %d size: %d", opcode, ssize);
 
-			LOG("LED_SET_GAIN(%d,%d)", addr, intensity);
-			
-			setIntensity(addr, intensity);
-			break;
-		}
+  char tmp[64];	
+  if(ssize > 0)
+    Serial.readBytes(tmp, ssize < 64 ? ssize : 64);
 
-		case LED_SET_CHIPCOUNT:
-		{
-			char chipcount = tmp[0];
-			if(chipcount < 0 || chipcount >= 8)
-				return;
+  /* handle various packet types */
+  switch(opcode)
+  {
+  case LED_SET_GAIN:
+    {			
+      char addr = tmp[0];
+      char intensity = tmp[1];
 
-			LOG("LED_SET_CHIPCOUNT(%d)", chipcount);
-			
-			priv.n_devices = chipcount;
-			break;
-		}
+      LOG("LED_SET_GAIN(%d,%d)", addr, intensity);
 
-		case LED_SET_SCANLIMIT:
-		{			
-			char addr = tmp[0];
-			char limit = tmp[1];
+      setIntensity(addr, intensity);
+      break;
+    }
 
-			LOG("LED_SET_SCANLIMIT(%d,%d)", addr, limit);
-			
-			setScanLimit(addr, limit);
-			break;
-		}
+  case LED_SET_CHIPCOUNT:
+    {
+      char chipcount = tmp[0];
+      if(chipcount < 0 || chipcount >= 8)
+        return;
 
-		case LED_LATCH:
-		{
-			LOG("LED_LATCH");
-			
-			showBuffer();
-			break;
-		}
+      LOG("LED_SET_CHIPCOUNT(%d)", chipcount);
 
-		case LED_UPLOAD:
-		{		
-			LOG("LED_UPLOAD");
-			
-			char i;
-			for(i=0; i < size; i++)
-				priv.status[i] = tmp[i];
+      priv.n_devices = chipcount;
 
-			break;
-		}
-			
-		/* huh? */
-		default:
-		{
-			return;
-		}
-	}
+      /* re-initialize new amount of chips */
+      for(int i=0; i < priv.n_devices; i++)
+        chipInit(i);
+      break;
+    }
 
-	/* throw away remaining data if we received too much */
-	if(size > 64)
-	{
-		int i;
-		for(i=0; i < size-64; i++)
-			Serial.read();
-	}
+  case LED_SET_SCANLIMIT:
+    {			
+      char addr = tmp[0];
+      char limit = tmp[1];
+
+      LOG("LED_SET_SCANLIMIT(%d,%d)", addr, limit);
+
+      setScanLimit(addr, limit);
+      break;
+    }
+
+  case LED_LATCH:
+    {
+      LOG("LED_LATCH");
+
+      showBuffer();
+      break;
+    }
+
+  case LED_UPLOAD:
+    {		
+      LOG("LED_UPLOAD");
+
+      char i;
+      for(i=0; i < ssize; i++)
+      {
+        priv.status[i] = tmp[i];
+      }
+
+      break;
+    }
+
+    /* huh? */
+  default:
+    {
+      return;
+    }
+  }
+
+  /* throw away remaining data if we received too much */
+  if(ssize > 64)
+  {
+    int i;
+    for(i=0; i < ssize-64; i++)
+      Serial.read();
+  }
 }
 
+
+/*****************************************************************************/
 
 /** arduino setup function (called once after reset) */
 void setup() 
 {
-	LOG("Initializing...");
-	
-	/* we start with a maximum of 8 devices */
-	priv.n_devices = 8;
+  /* we start with 8 chips */
+  priv.n_devices = 8;
 
-	/* initialize SPI */
-	priv->spi_mosi = PIN_DATA;
-    	priv->spi_clk  = PIN_CLOCK;
-    	priv->spi_cs   = PIN_CS;
-	pinMode(priv->spi_mosi, OUTPUT);
-	pinMode(priv->spi_clk,  OUTPUT);
-	pinMode(priv->spi_cs,   OUTPUT);
-        digitalWrite(priv->spi_cs,HIGH);
-    
-	int i;
-	for(i=0; i < priv.n_devices; i++) 
-	{
-		spiTransfer(i,OP_DISPLAYTEST,0);
-		/* scanlimit is set to max on startup */
-		setScanLimit(i,7);
-		/* set intensity to medium on startup */
-		setIntensity(i, 8);
-		/* decode is done in source */
-		spiTransfer(i,OP_DECODEMODE,0);
-		//clearDisplay(i);
-		/* we go into shutdown-mode on startup */
-		shutdown(i,true);
-	}
+  /* initialize SPI */
+  priv.SPI_MOSI = PIN_DATA;
+  priv.SPI_CLK  = PIN_CLOCK;
+  priv.SPI_CS   = PIN_CS;
+  pinMode(priv.SPI_MOSI, OUTPUT);
+  pinMode(priv.SPI_CLK,  OUTPUT);
+  pinMode(priv.SPI_CS,   OUTPUT);
+  digitalWrite(priv.SPI_CS,HIGH);
 
-	/* initialize serial communication */
-	Serial.begin(115200);
+  /* clear our buffer */
+  int i;
+  for(i=0; i < sizeof(priv.status); i++) 
+    priv.status[i] = 0x00;
+
+  for(i=0; i < priv.n_devices; i++) 
+  {
+    chipInit(i);
+  }
+
+  /* initialize serial communication */
+  Serial.begin(115200);
+
+  LOG("Initialized...");
 }
 
+/**
+ * Test packets:
+ * 0x4 0x8 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 
+ * 0x3 0x0
+ * 
+ * 0x1 0x1 0x1 0x4 0x8 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0x3 0x0
+ * 
+ * Gives:
+ * 0xffff 0x2 0x0 0x3 0xffff 0x4 0x0 0x5 0xffff 0x6 0x0 0x7 0xffff 0x8 0x0
+ */
 
 /** arduino loop function (called repeatedly)*/
 void loop()
 {
-	char opcode, size;
+  char opcode, size;
 
-	/* wait for 2 bytes at least */
-	if(Serial.available() < 2)
-		return;
+  /* wait for 2 bytes at least */
+  if(Serial.available() < 2)
+    return;
 
-	opcode = Serial.read();
-	size = Serial.read();
+  opcode = Serial.read();
+  size = Serial.read();
 
-	rxPacket(opcode, size);
+  rxPacket(opcode, size);
 }
+
