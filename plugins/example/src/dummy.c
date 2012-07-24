@@ -353,8 +353,8 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
         NFT_LOG(L_DEBUG, "Greyscale-Buffer:");
 
         char *buffer = led_chain_get_buffer(c);
-        int i,a ;
-        size_t pos;
+        LedCount i,a ;
+        int pos;
         static char string[512];
         char *b = buffer;
         

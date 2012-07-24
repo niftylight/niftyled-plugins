@@ -1,13 +1,7 @@
 # libniftyled Makefile.am - v0.3 - Daniel Hiepler <daniel@niftylight.de> 
 
+include $(top_srcdir)/Makefile.global.am
 
-
-# compile for debugging ?
-if DEBUG
-    OPT_CFLAGS = -O0 -g
-else
-    OPT_CFLAGS = -O2
-endif
 
 
 # path to install plugins
@@ -29,13 +23,16 @@ dummy_hardware_la_SOURCES = \
 
 # cflags
 dummy_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) $(OPT_CFLAGS)
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) \
+	$(COMMON_CFLAGS_N) $(OPT_CFLAGS)
 
 # link in additional libraries
 dummy_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libusb_LIBS)
+	$(niftyled_LIBS) $(libusb_LIBS) \
+	$(COMMON_LIBS_N)
 
 # linker flags
 dummy_hardware_la_LDFLAGS = \
+	$(COMMON_LDFLAGS_N) \
 	-no-allow-shlib-undefined \
 	-module -avoid-version

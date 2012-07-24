@@ -109,7 +109,7 @@ static void _deinit(void *privdata)
 {
         NFT_LOG(L_INFO, "Deinitializing plugin...");   
 
-        struct priv *p = privdata;
+        //struct priv *p = privdata;
         
         /* unregister dynamic properties */
         //~ led_hardware_plugin_prop_unregister(p->hw, "address");

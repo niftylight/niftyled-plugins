@@ -69,7 +69,7 @@ static NftResult _adapter_usb_send(Niftylino *n, uint message, char *payload, si
 
 
 /** receive payload from adapter */
-static NftResult _adapter_usb_rcv(Niftylino *n, uint message, char *payload, size_t payload_size)
+/*static NftResult _adapter_usb_rcv(Niftylino *n, uint message, char *payload, size_t payload_size)
 {
         if(!n->usb_handle)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -80,7 +80,7 @@ static NftResult _adapter_usb_rcv(Niftylino *n, uint message, char *payload, siz
                 return NFT_FAILURE;
 
         return NFT_SUCCESS;
-}
+}*/
 
 
 
@@ -126,12 +126,9 @@ static NftResult _set_ledcount(Niftylino *n, LedCount ledcount)
 
          _Chainlength.leds = ledcount;
 
-        if( _adapter_usb_send(n, NIFTY_SET_CHAINLENGTH,
+        return _adapter_usb_send(n, NIFTY_SET_CHAINLENGTH,
                             (char *) &_Chainlength,
-                            sizeof(_Chainlength)) < 0)
-                return NFT_FAILURE;
-
-        return NFT_SUCCESS;
+                            sizeof(_Chainlength));
 }
 
 /** set width of brightness-values */
@@ -153,13 +150,9 @@ static NftResult _set_format(void *privdata, NiftylinoValueWidth w)
         _Bitwidth.width = w;
         
         /* send bitwidth */
-        if(_adapter_usb_send(n, NIFTY_SET_INPUT_BITWIDTH, 
+        return _adapter_usb_send(n, NIFTY_SET_INPUT_BITWIDTH, 
                              (char *) &_Bitwidth, 
-                             sizeof(_Bitwidth)) < 0)
-                return NFT_FAILURE;
-
-        /** @todo check if we suceeded */
-        return NFT_SUCCESS;
+                             sizeof(_Bitwidth));
 }
 
 /*******************************************************************************
