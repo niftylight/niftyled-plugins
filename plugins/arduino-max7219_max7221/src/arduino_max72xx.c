@@ -43,6 +43,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -67,9 +68,9 @@ struct priv
 	/* buffer to contain our monochrome buffer */
 	unsigned char *		 buffer;
         /* threshold to use for greyscale -> monochrome conversion */
-        int			 threshold;
+        unsigned char		 threshold;
 	/* scan limit for MAX72xx multiplexing */
-	int			 scan_limit;
+	unsigned char		 scan_limit;
 	/* file descriptor for serial port */
 	int			 fd;
 	/* place to save current termios of serial port */
@@ -79,7 +80,10 @@ struct priv
 
 
 /** send data packet to arduino */
-NftResult ad_txPacket(struct priv *p, char opcode, char *data, char size)
+NftResult ad_txPacket(struct priv *p, 
+                      unsigned char opcode, 
+                      unsigned char *data, 
+                      unsigned char size)
 {
 
 	/* send opcode */
@@ -115,7 +119,9 @@ NftResult ad_txPacket(struct priv *p, char opcode, char *data, char size)
 
 
 /** send buffer to arduino */
-NftResult ad_sendBuffer(struct priv *p, char *buf, char size)
+NftResult ad_sendBuffer(struct priv *p, 
+                        unsigned char *buf, 
+                        unsigned char size)
 {
 	NFT_LOG(L_NOISY, "Uploading to arduino: %d bytes", size);
 	return ad_txPacket(p, OP_UPLOAD, buf, size);
@@ -130,20 +136,23 @@ NftResult ad_latch(struct priv *p)
 
 
 /** set scan limit */
-NftResult ad_setScanLimit(struct priv *p, char scan_limit)
+NftResult ad_setScanLimit(struct priv *p, 
+                          unsigned char scan_limit)
 {
 	return ad_txPacket(p, OP_SET_SCANLIMIT, &scan_limit, 1);
 }
 
 
 /** set amount of MAX72xx chips connected to arduino */
-NftResult ad_setChipcount(struct priv *p, char chipcount)
+NftResult ad_setChipcount(struct priv *p, 
+                          unsigned char chipcount)
 {
 	return ad_txPacket(p, OP_SET_CHIPCOUNT, &chipcount, 1);
 }
 
 /** set intensity */
-NftResult ad_setIntensity(struct priv *p, char intensity)
+NftResult ad_setIntensity(struct priv *p, 
+                          unsigned char intensity)
 {
 	return ad_txPacket(p, OP_SET_GAIN, &intensity, 1);
 }
@@ -351,7 +360,8 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 	    	{
 			NFT_LOG(L_INFO, "Getting gain of LED %d from arduino-max72xx hardware (%s)",
 			        data->gain.pos, p->id);
-			
+
+			/* @todo */
 			data->gain.value = 0;
 			return NFT_SUCCESS;
 		}
@@ -363,14 +373,14 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                 {
                         if(strcmp(data->custom.name, "threshold") == 0)
                         {
-                                data->custom.value.i = p->threshold;
-                                data->custom.valuesize = sizeof(p->threshold);
+                                data->custom.value.i = (int) p->threshold;
+                                data->custom.valuesize = sizeof(int);
 				return NFT_SUCCESS;
                         }
 			else if(strcmp(data->custom.name, "scan_limit") == 0)
                         {				
-                                data->custom.value.i = p->scan_limit;
-                                data->custom.valuesize = sizeof(p->threshold);
+                                data->custom.value.i = (int) p->scan_limit;
+                                data->custom.valuesize = sizeof(int);
 				return NFT_SUCCESS;
                         }
                         else
@@ -411,7 +421,7 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                 case LED_HW_LEDCOUNT:
                 {
 			/* validate range */
-			if(data->ledcount < 0 || data->ledcount > 512)
+			if(data->ledcount > 512)
 			{
 				NFT_LOG(L_ERROR, "This hardware can't control less than 0 or more than 512 LEDs");
 				return NFT_SUCCESS;
@@ -437,7 +447,7 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 
 		case LED_HW_GAIN:
 		{
-			NFT_LOG_TODO();
+			NFT_TODO();
 			return NFT_SUCCESS;
 		}
 			
@@ -448,14 +458,22 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                 {
                         if(strcmp(data->custom.name, "threshold") == 0)
                         {
+				/* validate */
+				if(data->custom.value.i < 0 || data->custom.value.i > 255)
+				{
+					NFT_LOG(L_ERROR, "threshold may only be 0-255. Not changing it.");
+					return NFT_FAILURE;
+				}
+				
                                 /* set new value */
-                                p->threshold = data->custom.value.i;
+                                p->threshold = (unsigned char) data->custom.value.i;
 				
                                 NFT_LOG(L_DEBUG, "Setting \"threshold\" of \"%s\" to %d", p->id, p->threshold);
 				return NFT_SUCCESS;
                         }
 			else if(strcmp(data->custom.name, "scan_limit") == 0)
                         {
+				/* validate */
 				if(data->custom.value.i < 0 || data->custom.value.i >= 8)
 				{
 					NFT_LOG(L_ERROR, "Scan limit %d outside range (0-7)", data->custom.value.i);
@@ -463,7 +481,7 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 				}
 				
                                 /* set new value */
-                                p->scan_limit = data->custom.value.i;
+                                p->scan_limit = (unsigned char) data->custom.value.i;
                                 NFT_LOG(L_DEBUG, "Setting \"scan_limit\" of \"%s\" to %d", p->id, p->threshold);
 				ad_setScanLimit(p, p->scan_limit);
 				
@@ -498,9 +516,9 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 	struct priv *p = privdata;
 	
 	/* 8 bits-per-pixel buffer as given by niftyled */
-        char *buffer = led_chain_get_buffer(c);
+        unsigned char *buffer = led_chain_get_buffer(c);
         /* 1 bit-per-pixel buffer as needed by arduino */
-	char packed[64];
+	unsigned char packed[64];
 
 	/* clear buffer */
 	memset(packed, 0, sizeof(packed));
@@ -509,25 +527,17 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 	unsigned int i;
 	for(i=0; i < p->ledcount; i++)
 	{
+		packed[i/8] = packed[i/8] << 1;
+		
 		if(buffer[i] >= p->threshold)
 			packed[i/8] |= 1;
-
-		packed[i/8] = packed[i/8] << 1;
-		NFT_LOG(L_DEBUG, "0x%x ", buffer[i]);
 	}
 
-	NFT_LOG(L_DEBUG, "Packed: %x %x %x %x %x %x %x %x", packed[0], packed[1], packed[2], packed[3],
-  packed[4], packed[5], packed[6], packed[7]); 
+	
+	NFT_LOG(L_NOISY, "Packed buffer: %x %x %x %x %x %x %x %x", 
+	        packed[0], packed[1], packed[2], packed[3],
+  		packed[4], packed[5], packed[6], packed[7]); 
 
-	packed[0] = 0xff;
-	packed[1] = 0xff;
-	packed[2] = 0xff;
-	packed[3] = 0xff;
-	packed[4] = 0xff;
-	packed[5] = 0xff;
-	packed[6] = 0xff;
-	packed[7] = 0xff;
-	packed[8] = 0xff;
 
 	/* send buffer */
 	ad_sendBuffer(p, packed, (p->ledcount%8 == 0 ? p->ledcount/8 : p->ledcount/8+1));

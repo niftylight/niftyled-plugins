@@ -64,7 +64,9 @@
 #define PIN_CLOCK	12
 #define PIN_CS		11
 
-#define DEBUG 
+
+/** define this for debugging output via LOG() function */
+#undef DEBUG 
 
 /******************************************************************************/
 
@@ -404,4 +406,3 @@ void loop()
 
   rxPacket(opcode, size);
 }
-
