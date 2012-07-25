@@ -79,7 +79,8 @@ struct priv
 
 
 
-/** send data packet to arduino */
+/** send data packet to arduino 
+ @todo fix "Resource temporarily unavailable" bug */
 NftResult ad_txPacket(struct priv *p, 
                       unsigned char opcode, 
                       unsigned char *data, 
@@ -296,11 +297,11 @@ static NftResult _hw_init(void *privdata, const char *id)
       	/* set new port settings */
 	struct termios newtio;
 	newtio.c_cflag = B115200 | CS8 | CSTOPB | CLOCAL | CREAD;
-        newtio.c_iflag = IGNPAR;
+        newtio.c_iflag = IGNPAR | IGNBRK;
         newtio.c_oflag = 0;
-        newtio.c_lflag = 0;       //ICANON;
+        newtio.c_lflag = 0;       
         newtio.c_cc[VMIN]=1;
-        newtio.c_cc[VTIME]=0;
+        newtio.c_cc[VTIME]=5;
         tcflush(p->fd, TCIFLUSH);
         tcsetattr(p->fd,TCSANOW,&newtio);
 
@@ -371,6 +372,8 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                    data->custom.valuesize */
                 case LED_HW_CUSTOM_PROP:
                 {
+			/* @todo bugs ahead, will show with debug 
+			   @todo fix chain != config output */
                         if(strcmp(data->custom.name, "threshold") == 0)
                         {
                                 data->custom.value.i = (int) p->threshold;
