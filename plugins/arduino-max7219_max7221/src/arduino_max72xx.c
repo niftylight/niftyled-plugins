@@ -79,8 +79,8 @@ struct priv
 
 
 
-/** send data packet to arduino 
- @todo fix "Resource temporarily unavailable" bug */
+
+/** send data packet to arduino */
 NftResult ad_txPacket(struct priv *p, 
                       unsigned char opcode, 
                       unsigned char *data, 
@@ -93,6 +93,7 @@ NftResult ad_txPacket(struct priv *p,
 		NFT_LOG_PERROR("write()");
 		return NFT_FAILURE;
 	}
+
 	
 	/* send datasize */
 	if(write(p->fd, &size, 1) == -1)
@@ -101,20 +102,14 @@ NftResult ad_txPacket(struct priv *p,
 		return NFT_FAILURE;
 	}
 	
-	ssize_t sent = 0;
-	ssize_t send = (ssize_t) size;
 	
-	while(send > 0)
+	/* send data */	
+	if(write(p->fd, data, (size_t) size) == -1)
 	{
-		if((sent = write(p->fd, &data[sent], send)) == -1)
-		{
-			NFT_LOG_PERROR("write()");
-			return NFT_FAILURE;
-		}
-		
-		send -= sent;
+		NFT_LOG_PERROR("write()");
+		return NFT_FAILURE;
 	}
-	
+
 	return NFT_SUCCESS;
 }
 
@@ -284,7 +279,7 @@ static NftResult _hw_init(void *privdata, const char *id)
 	}
 
 	/* open serial port */
-	if((p->fd = open(p->id, O_RDWR | O_NOCTTY | O_NONBLOCK)) == -1)
+	if((p->fd = open(p->id, O_RDWR | O_NOCTTY)) == -1)
 	{
 		NFT_LOG(L_ERROR, "Failed to open port \"%s\"", p->id);
 		NFT_LOG_PERROR("open()");
@@ -472,6 +467,7 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                                 p->threshold = (unsigned char) data->custom.value.i;
 				
                                 NFT_LOG(L_DEBUG, "Setting \"threshold\" of \"%s\" to %d", p->id, p->threshold);
+				
 				return NFT_SUCCESS;
                         }
 			else if(strcmp(data->custom.name, "scan_limit") == 0)
