@@ -289,8 +289,11 @@ static NftResult _hw_init(void *privdata, const char *id)
 	/* save current port settings */
 	tcgetattr(p->fd,&p->oldtio); 
 	
-      	/* set new port settings */
+      	/* space for new tio structure */
 	struct termios newtio;
+	memset(&newtio, 0, sizeof(struct termios));
+	
+	/* set new port settings */
 	newtio.c_cflag = B115200 | CS8 | CSTOPB | CLOCAL | CREAD;
         newtio.c_iflag = IGNPAR | IGNBRK;
         newtio.c_oflag = 0;
