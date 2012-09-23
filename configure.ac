@@ -51,11 +51,21 @@ AC_SUBST(niftyled_LIBS)
 PKG_CHECK_MODULES(libusb, \
     [libusb], \
     [echo "libusb found: compiling USB plugins" ; BUILD_USB_PLUGINS=true], \
-    [AC_MSG_ERROR([You need libusb + development headers installed]) ; BUILD_USB_PLUGINS=false])
+    [echo "no libusb found: not compiling USB plugins" ; BUILD_USB_PLUGINS=false])
+
 AC_SUBST(NL_PLUGIN_EXAMPLE)
 AC_SUBST(NL_PLUGIN_NIFTYLINO)
+AC_SUBST(NL_PLUGIN_ARDUINO_72XX)
+
 AC_SUBST(libusb_CFLAGS)
 AC_SUBST(libusb_LIBS)
+
+# check for libartnet
+PKG_CHECK_MODULES(libartnet, \
+    [libartnet >= 1.0.6], \
+    [echo "libartnet found: compiling artnet plugin" ; BUILD_ARTNET_PLUGINS=true], \
+    [echo "no libartnet found: not compiling artnet plugin" ; BUILD_ARTNET_PLUGINS=false])
+
 
 
 # --------------------------------
@@ -64,14 +74,24 @@ AC_SUBST(libusb_LIBS)
 
 
 # dummy/example plugin
-NL_PLUGIN_EXAMPLE=true
+NL_PLUGIN_DUMMY=true
+
+# arduino max72xx serial plugin
+NL_PLUGIN_ARDUINO_72XX=true
 
 # build USB plugins?
-if test "$BUILD_USB_PLUGINS" == "true" ; then
-
+if test "$BUILD_USB_PLUGINS" = "true" ; then
     # niftylino USB adapter
     NL_PLUGIN_NIFTYLINO=true
 fi
+
+
+# build artnet plugins?
+if test "$BUILD_ARTNET_PLUGINS" = "true" ; then
+    # artnet plugin
+    NL_PLUGIN_ARTNET=true
+fi
+
 
 
 # --------------------------------
@@ -140,26 +160,48 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
 
 
+# dummy/example plugin argument
+NL_WANT_PLUGIN_DUMMY=true
 AC_ARG_ENABLE(
-	example-plugin,
-	[  --enable-example-plugin         Build dummy plugin ],
-	[ NL_PLUGIN_EXAMPLE=false ],
-	[ NL_PLUGIN_EXAMPLE=true])
-AM_CONDITIONAL(NL_PLUGIN_EXAMPLE, test x$example-plugin = xtrue || test x$NL_PLUGIN_EXAMPLE = xtrue)
+	dummy_plugin,
+	[  --enable-dummy-plugin         Build dummy plugin ],
+	[ if test x$enableval = xfalse ; then NL_WANT_PLUGIN_DUMMY=false ; fi ])
+AM_CONDITIONAL(NL_PLUGIN_DUMMY, test x$NL_WANT_PLUGIN_DUMMY = xtrue && test x$NL_PLUGIN_DUMMY = xtrue)
 
+# arduino 72xx serial plugin argument
+NL_WANT_PLUGIN_ARDUINO_72XX=true
 AC_ARG_ENABLE(
-	niftylino-plugin,
+	arduino_72xx_plugin,
+	[  --enable-arduino_72xx-plugin         Build dummy plugin ],
+	[ if test x$enableval = xfalse ; then NL_WANT_PLUGIN_ARDUINO_72XX=false ; fi ])
+AM_CONDITIONAL(NL_PLUGIN_ARDUINO_72XX, test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue && test x$NL_PLUGIN_ARDUINO_72XX = xtrue)
+
+# niftylino plugin argument
+NL_WANT_PLUGIN_NIFTYLINO=true
+AC_ARG_ENABLE(
+	niftylino_plugin,
 	[  --enable-niftylino-plugin         Build niftylino plugin ],
-	[ NL_PLUGIN_NIFTYLINO=false ],
-	[ NL_PLUGIN_NIFTYLINO=true])
-AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$niftylino-plugin = xtrue || test x$NL_PLUGIN_NIFTYLINO = xtrue)
+	[ if test x$enableval = xfalse ; then NL_WANT_PLUGIN_NIFTYLINO=false ; fi ])
+AM_CONDITIONAL(NL_PLUGIN_NIFTYLINO, test x$NL_WANT_PLUGIN_NIFTYLINO = xtrue && test x$NL_PLUGIN_NIFTYLINO = xtrue)
 
-        
+# libartnet plugin argument
+NL_WANT_PLUGIN_ARTNET=true
+AC_ARG_ENABLE(
+	artnet_plugin,
+	[  --enable-artnet-plugin         Build libartnet plugin ],
+	[ if test x$enableval = xfalse ; then NL_WANT_PLUGIN_ARTNET=false ; fi ])
+AM_CONDITIONAL(NL_PLUGIN_ARTNET, test x$NL_WANT_PLUGIN_ARTNET = xtrue && test x$NL_PLUGIN_ARTNET = xtrue)
+
+
+       
 # --------------------------------
 # Build string with plugins to build
 # --------------------------------
-if test x$example-plugin = xtrue || test x$NL_PLUGIN_EXAMPLE = xtrue ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
-if test x$niftylino-plugin = xtrue || test x$NL_PLUGIN_NIFTYLINO = xtrue ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
+if test x$NL_WANT_PLUGIN_DUMMY = xtrue && test x$NL_PLUGIN_DUMMY = xtrue ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
+if test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue && test x$NL_PLUGIN_ARDUINO_72XX = xtrue ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
+if test x$NL_WANT_PLUGIN_NIFTYLINO = xtrue && test x$NL_PLUGIN_NIFTYLINO = xtrue ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
+if test x$NL_WANT_PLUGIN_ARTNET = xtrue && test x$NL_PLUGIN_ARTNET = xtrue ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
+
 
 
 # --------------------------------
@@ -169,12 +211,18 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_FILES([ \
 	Makefile \
 	plugins/Makefile \
-	plugins/niftylino/Makefile \
-	plugins/niftylino/src/Makefile \
-	plugins/niftylino/tests/Makefile \
 	plugins/example/Makefile \
 	plugins/example/src/Makefile \
-	plugins/example/tests/Makefile])
+	plugins/example/tests/Makefile \
+	plugins/arduino-max7219_max7221/Makefile \
+	plugins/arduino-max7219_max7221/src/Makefile \
+	plugins/arduino-max7219_max7221/tests/Makefile \
+	plugins/artnet/Makefile \
+	plugins/artnet/src/Makefile \
+	plugins/artnet/tests/Makefile \
+	plugins/niftylino/Makefile \
+	plugins/niftylino/src/Makefile \
+	plugins/niftylino/tests/Makefile])
 AC_OUTPUT
 
 

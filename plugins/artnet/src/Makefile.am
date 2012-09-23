@@ -15,24 +15,23 @@ INCLUDE_DIRS = \
 
 
 # target library
-lib_LTLIBRARIES=dummy-hardware.la
+lib_LTLIBRARIES=artnet-hardware.la
 
 # sources
-dummy_hardware_la_SOURCES = \
-	dummy.c
+artnet_hardware_la_SOURCES = \
+	artnet.c
 
 # cflags
-dummy_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) \
+artnet_hardware_la_CFLAGS = \
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libartnet_CFLAGS) \
 	$(COMMON_CFLAGS_N) $(OPT_CFLAGS)
 
 # link in additional libraries
-dummy_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libusb_LIBS) \
+artnet_hardware_la_LIBADD = \
+	$(niftyled_LIBS) $(libartnet_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
-dummy_hardware_la_LDFLAGS = \
+artnet_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
-	-no-allow-shlib-undefined \
-	-module -avoid-version
+	-no-allow-shlib-undefined -module -avoid-version

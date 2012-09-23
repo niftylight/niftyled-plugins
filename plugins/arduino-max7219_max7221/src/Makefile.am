@@ -15,24 +15,24 @@ INCLUDE_DIRS = \
 
 
 # target library
-lib_LTLIBRARIES=dummy-hardware.la
+lib_LTLIBRARIES=arduino-max72xx-hardware.la
 
 # sources
-dummy_hardware_la_SOURCES = \
-	dummy.c
+arduino_max72xx_hardware_la_SOURCES = \
+	arduino_max72xx.c
 
 # cflags
-dummy_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) \
+arduino_max72xx_hardware_la_CFLAGS = \
+	$(INCLUDE_DIRS) $(niftyled_CFLAGS) \
 	$(COMMON_CFLAGS_N) $(OPT_CFLAGS)
 
 # link in additional libraries
-dummy_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libusb_LIBS) \
+arduino_max72xx_hardware_la_LIBADD = \
+	$(niftyled_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
-dummy_hardware_la_LDFLAGS = \
+arduino_max72xx_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
 	-no-allow-shlib-undefined \
 	-module -avoid-version
