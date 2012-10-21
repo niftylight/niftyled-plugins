@@ -7,8 +7,8 @@ if NL_PLUGIN_DUMMY
 SUBDIRS = src
 
 # compile tests for "make check"? (configure argument "--disable-tests")
-#ifeq $(RUN_TESTS) "true"
-#    SUBDIRS += tests
-#endif
+if RUN_TESTS
+    SUBDIRS += tests
+endif
 
 endif

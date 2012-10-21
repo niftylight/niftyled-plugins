@@ -12,7 +12,7 @@ libdir = @libdir@/niftyled-plugins
 INCLUDE_DIRS = \
 	-I$(top_srcdir)
 
-
+EXTRA_DIST = arduino_max72xx.h
 
 # target library
 lib_LTLIBRARIES=arduino-max72xx-hardware.la

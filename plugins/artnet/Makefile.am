@@ -6,8 +6,8 @@ if NL_PLUGIN_ARTNET
 SUBDIRS = src
 
 # compile tests for "make check"? (configure argument "--disable-tests")
-#ifeq $(RUN_TESTS) "true"
-#    SUBDIRS += tests
-#endif
+if RUN_TESTS
+    SUBDIRS += tests
+endif
 
 endif

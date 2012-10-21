@@ -11,6 +11,6 @@ my_ldflags = $(COMMON_LDFLAGS_N)
 check_PROGRAMS =
 
 # test-target
-TESTS = $(check_PROGRAMS)
-TESTS_ENVIRONMENT = "$(top_srcdir)/tests/tests.env"
-EXTRA_DIST = tests.env
+#TESTS = $(check_PROGRAMS)
+#TESTS_ENVIRONMENT = "$(top_srcdir)/tests/tests.env"
+#EXTRA_DIST = tests.env

@@ -222,7 +222,8 @@ AC_CONFIG_FILES([ \
 	plugins/artnet/tests/Makefile \
 	plugins/niftylino/Makefile \
 	plugins/niftylino/src/Makefile \
-	plugins/niftylino/tests/Makefile])
+	plugins/niftylino/tests/Makefile \
+	debian/control.tmpl])
 AC_OUTPUT
 
 

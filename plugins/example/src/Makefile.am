@@ -7,6 +7,8 @@ include $(top_srcdir)/Makefile.global.am
 # path to install plugins
 libdir = @libdir@/niftyled-plugins
 
+EXTRA_DIST = \
+	dummy.h
 
 # include dirs
 INCLUDE_DIRS = \

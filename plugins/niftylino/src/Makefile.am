@@ -11,7 +11,11 @@ libdir = @libdir@/niftyled-plugins
 # include dirs
 INCLUDE_DIRS = \
 	-I$(top_srcdir)
-	
+
+
+EXTRA_DIST = \
+	niftylino.h \
+	niftylino_usb.h
 
 
 # target library
