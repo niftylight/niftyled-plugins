@@ -17,7 +17,7 @@ KEYWORDS="~x86 ~amd64"
 
 IUSE="debug niftylino arduino usb"
 
-RDEPEND="dev-libs/niftyled"
+RDEPEND="media-gfx/niftyled"
 
 DEPEND="${RDEPEND} 
 	virtual/pkgconfig"
