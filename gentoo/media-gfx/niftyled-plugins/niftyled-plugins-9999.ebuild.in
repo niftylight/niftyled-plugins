@@ -15,13 +15,17 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~x86 ~amd64"
 
-IUSE="debug"
+IUSE="debug niftylino arduino"
 
-RDEPEND="sys-libs/glibc
-	dev-libs/niftyled"
+RDEPEND="dev-libs/niftyled"
 
 DEPEND="${RDEPEND} 
 	virtual/pkgconfig"
+
+REQUIRED_USE="
+	niftylino? ( usb )
+	arduino? ( usb )"
+
 
 
 src_prepare()
@@ -37,7 +41,9 @@ src_unpack()
 src_configure() 
 {
 	econf \
-                $(use_enable debug)
+                $(use_enable debug) \
+                $(use_enable niftylino niftylino-plugin) \
+                $(use_enable arduino arduino_72xx-plugin)
 }
 
 src_install() {

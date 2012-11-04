@@ -13,6 +13,7 @@ SUBDIRS = plugins
 
 EXTRA_DIST = \
 	Makefile.global.am \
+	gentoo \
 	debian \
 	version
 

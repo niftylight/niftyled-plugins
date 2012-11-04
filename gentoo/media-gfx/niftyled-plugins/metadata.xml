@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<herd>dev-embedded</herd>
+<use>
+  <flag name='niftylino'>Enable support for niftylino USB LED controller</flag>
+  <flag name="arduino">Enable support for arduino based LED controllers</flag>
+</use>
+</pkgmetadata>
