@@ -215,7 +215,7 @@ AC_CONFIG_FILES([
 	plugins/niftylino/src/Makefile
 	plugins/niftylino/tests/Makefile
 	debian/control.tmpl
-	gentoo/dev-libs/niftyled-plugins/niftyled-plugins-9999.ebuild])
+	gentoo/media-gfx/niftyled-plugins/niftyled-plugins-9999.ebuild])
 AC_OUTPUT
 
 
