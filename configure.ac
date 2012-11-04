@@ -1,11 +1,12 @@
-# libniftyled plugins configure.ac 
-# v0.3 - (c) Daniel Hiepler (2010-2012)
+# libniftyled plugins configure.ac
+# v0.4 - (c) Daniel Hiepler (2010-2012)
+
 
 # --------------------------------
 #    initialization
 # --------------------------------
 
-AC_INIT([niftyled-plugins], m4_esyscmd([./version.sh --short]), [http://github.com/niftylight/niftyled-plugins/issues], [niftyled-plugins], http://wiki.niftylight.de/Hardware-plugins)
+AC_INIT([niftyled-plugins], m4_esyscmd([./version --short]), [http://github.com/niftylight/niftyled-plugins/issues], [niftyled-plugins], http://wiki.niftylight.de/Hardware-plugins)
 AC_COPYRIGHT([Copyright (C) 2006-2012 Daniel Hiepler])
 
 AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wall])
@@ -18,14 +19,18 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # infos
 PACKAGE_DESCRIPTION="libniftyled runtime loadabled plugins"
-AC_SUBST([PACKAGE_DESCRIPTION], [${PACKAGE_DESCRIPTION}], [package description])
-AC_DEFINE_UNQUOTED(PACKAGE_DESCRIPTION, "${PACKAGE_DESCRIPTION}", [package description])
+PACKAGE_DESCRIPTION_LONG="libniftyled runtime loadabled plugins that provide support for various lighting hardware interfaces"
 
-# versioning (s. version.sh)
-AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version.sh --major]), [major version])
-AC_SUBST([PACKAGE_MINOR_VERSION], m4_esyscmd([./version.sh --minor]), [minor version])
-AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version.sh --micro]), [micro version])
-AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version.sh --git]), [git version])
+AC_SUBST([PACKAGE_DESCRIPTION], [${PACKAGE_DESCRIPTION}], [package description])
+AC_SUBST([PACKAGE_DESCRIPTION_LONG], [${PACKAGE_DESCRIPTION_LONG}], [long package description])
+AC_DEFINE_UNQUOTED(PACKAGE_DESCRIPTION, "${PACKAGE_DESCRIPTION}", [package description])
+AC_DEFINE_UNQUOTED(PACKAGE_DESCRIPTION_LONG, "${PACKAGE_DESCRIPTION_LONG}", [long package description])
+
+# versioning (s. version script)
+AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version --major]), [major version])
+AC_SUBST([PACKAGE_MINOR_VERSION], m4_esyscmd([./version --minor]), [minor version])
+AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version --micro]), [micro version])
+AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version --git]), [git version])
 
 
 
@@ -36,7 +41,7 @@ LT_INIT
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG([0.14])
-if test -z "$PKG_CONFIG"; then
+if test -z "${PKG_CONFIG}"; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
 fi
 
@@ -125,17 +130,6 @@ fi
 
 
 # --------------------------------
-# Check for target-specific stuff 
-# when cross-compiling
-# --------------------------------
-case "${host}" in
-    *-mingw32*|*-winnt*)
-        CFLAGS="${CFLAGS} -DWIN32"
-    ;;
-esac
-
-
-# --------------------------------
 #   compile process
 # --------------------------------
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -146,18 +140,15 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # --------------------------------
 AC_ARG_ENABLE(
         debug,
-	[  --disable-debug         Don't compile for debugging ],
-	[ debug=false ],
-	[ debug=true])
-AM_CONDITIONAL(DEBUG, test x$debug = xtrue)				
+		AS_HELP_STRING([--enable-debug], [enable debugging, default: no]),
+		[case "${enableval}" in
+             yes) debug=true ;;
+             no)  debug=false ;;
+             *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+		esac],
+		[debug=false])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-
-AC_ARG_ENABLE(
-	tests,
-	[  --disable-tests         Don't build tests for "make check" ],
-	[ tests=false ],
-	[ tests=true])
-AM_CONDITIONAL(RUN_TESTS, test x$tests = xtrue)
 
 
 # dummy/example plugin argument
@@ -193,37 +184,37 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(NL_PLUGIN_ARTNET, test x$NL_WANT_PLUGIN_ARTNET = xtrue && test x$NL_PLUGIN_ARTNET = xtrue)
 
 
-       
+
 # --------------------------------
 # Build string with plugins to build
 # --------------------------------
-if test x$NL_WANT_PLUGIN_DUMMY = xtrue && test x$NL_PLUGIN_DUMMY = xtrue ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
-if test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue && test x$NL_PLUGIN_ARDUINO_72XX = xtrue ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
-if test x$NL_WANT_PLUGIN_NIFTYLINO = xtrue && test x$NL_PLUGIN_NIFTYLINO = xtrue ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
-if test x$NL_WANT_PLUGIN_ARTNET = xtrue && test x$NL_PLUGIN_ARTNET = xtrue ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
+if test "x$NL_WANT_PLUGIN_DUMMY" = "xtrue" && test "x$NL_PLUGIN_DUMMY" = "xtrue" ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
+if test "x$NL_WANT_PLUGIN_ARDUINO_72XX" = "xtrue" && test "x$NL_PLUGIN_ARDUINO_72XX" = "xtrue" ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
+if test "x$NL_WANT_PLUGIN_NIFTYLINO" = "xtrue" && test "x$NL_PLUGIN_NIFTYLINO" = "xtrue" ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
+if test "x$NL_WANT_PLUGIN_ARTNET" = "xtrue" && test "x$NL_PLUGIN_ARTNET" = "xtrue" ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
 
 
 
 # --------------------------------
 # Output
 # --------------------------------
-AM_CONFIG_HEADER(config.h)      
-AC_CONFIG_FILES([ \
-	Makefile \
-	plugins/Makefile \
-	plugins/example/Makefile \
-	plugins/example/src/Makefile \
-	plugins/example/tests/Makefile \
-	plugins/arduino-max7219_max7221/Makefile \
-	plugins/arduino-max7219_max7221/src/Makefile \
-	plugins/arduino-max7219_max7221/tests/Makefile \
-	plugins/artnet/Makefile \
-	plugins/artnet/src/Makefile \
-	plugins/artnet/tests/Makefile \
-	plugins/niftylino/Makefile \
-	plugins/niftylino/src/Makefile \
-	plugins/niftylino/tests/Makefile \
-	debian/control.tmpl \
+AM_CONFIG_HEADER([config.h])
+AC_CONFIG_FILES([
+	Makefile
+	plugins/Makefile
+	plugins/example/Makefile
+	plugins/example/src/Makefile
+	plugins/example/tests/Makefile
+	plugins/arduino-max7219_max7221/Makefile
+	plugins/arduino-max7219_max7221/src/Makefile
+	plugins/arduino-max7219_max7221/tests/Makefile
+	plugins/artnet/Makefile
+	plugins/artnet/src/Makefile
+	plugins/artnet/tests/Makefile
+	plugins/niftylino/Makefile
+	plugins/niftylino/src/Makefile
+	plugins/niftylino/tests/Makefile
+	debian/control.tmpl
 	gentoo/dev-libs/niftyled-plugins/niftyled-plugins-9999.ebuild])
 AC_OUTPUT
 
@@ -243,6 +234,6 @@ Configure report:
     System CFLAGS...............:  ${CFLAGS}
     System CXXFLAGS.............:  ${CXXFLAGS}
     System LDFLAGS..............:  ${LDFLAGS}
-    
+
     Building plugins............:  ${BUILD_PLUGINS}
 "
