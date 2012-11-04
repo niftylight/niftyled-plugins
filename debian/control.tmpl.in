@@ -14,11 +14,11 @@ Architecture: any
 Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@ (= ${binary:Version}), libniftyprefs-dev, libniftyled-dev
 Description: @PACKAGE_NAME@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
- @PACKAGE_DESCRIPTION@
+ @PACKAGE_DESCRIPTION_LONG@
 
 Package: @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libniftyprefs0 (>= 0.1.0), libniftyled0 (>= 0.1.1), libniftylog1 (>= 0.1.2)
-Description: niftyled hardware plugins
- @PACKAGE_DESCRIPTION@
+Description: @PACKAGE_DESCRIPTION@
+ @PACKAGE_DESCRIPTION_LONG@
