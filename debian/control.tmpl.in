@@ -11,7 +11,7 @@ Homepage: @PACKAGE_URL@
 Package: @PACKAGE_NAME@-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@ (= ${binary:Version}), libniftyprefs-dev, libniftyled-dev, libniftylog-dev
+Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@ (= ${binary:Version}), libniftyprefs-dev, libniftyled-dev
 Description: @PACKAGE_NAME@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION@
