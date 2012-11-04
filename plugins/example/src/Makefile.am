@@ -1,4 +1,7 @@
-# libniftyled Makefile.am - v0.3 - Daniel Hiepler <daniel@niftylight.de> 
+#############
+# libniftyled plugins Makefile.am
+# v0.4 - Daniel Hiepler <daniel@niftylight.de>
+
 
 include $(top_srcdir)/Makefile.global.am
 
@@ -7,14 +10,15 @@ include $(top_srcdir)/Makefile.global.am
 # path to install plugins
 libdir = @libdir@/niftyled-plugins
 
-EXTRA_DIST = \
-	dummy.h
 
 # include dirs
 INCLUDE_DIRS = \
-	-I$(top_srcdir)
+	-I$(top_srcdir) \
+	-I$(top_builddir)
 
-
+# files to include in archive
+EXTRA_DIST = \
+	dummy.h
 
 # target library
 lib_LTLIBRARIES=dummy-hardware.la
@@ -25,12 +29,16 @@ dummy_hardware_la_SOURCES = \
 
 # cflags
 dummy_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libusb_CFLAGS) \
-	$(COMMON_CFLAGS_N) $(OPT_CFLAGS)
+	$(INCLUDE_DIRS) \
+	$(niftyled_CFLAGS) \
+	$(libusb_CFLAGS) \
+	$(COMMON_CFLAGS_N) \
+	$(DEBUG_CFLAGS)
 
 # link in additional libraries
 dummy_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libusb_LIBS) \
+	$(niftyled_LIBS) \
+	$(libusb_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags

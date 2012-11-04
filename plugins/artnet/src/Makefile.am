@@ -1,4 +1,7 @@
-# libniftyled Makefile.am - v0.3 - Daniel Hiepler <daniel@niftylight.de> 
+#############
+# libniftyled plugins Makefile.am
+# v0.4 - Daniel Hiepler <daniel@niftylight.de>
+
 
 include $(top_srcdir)/Makefile.global.am
 
@@ -10,8 +13,8 @@ libdir = @libdir@/niftyled-plugins
 
 # include dirs
 INCLUDE_DIRS = \
-	-I$(top_srcdir)
-
+	-I$(top_srcdir) \
+	-I$(top_builddir)
 
 
 # target library
@@ -23,15 +26,20 @@ artnet_hardware_la_SOURCES = \
 
 # cflags
 artnet_hardware_la_CFLAGS = \
-	$(INCLUDE_DIRS) $(niftyled_CFLAGS) $(libartnet_CFLAGS) \
-	$(COMMON_CFLAGS_N) $(OPT_CFLAGS)
+	$(INCLUDE_DIRS) \
+	$(niftyled_CFLAGS) \
+	$(libartnet_CFLAGS) \
+	$(COMMON_CFLAGS_N) \
+	$(DEBUG_CFLAGS)
 
 # link in additional libraries
 artnet_hardware_la_LIBADD = \
-	$(niftyled_LIBS) $(libartnet_LIBS) \
+	$(niftyled_LIBS) \
+	$(libartnet_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
 artnet_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
-	-no-allow-shlib-undefined -module -avoid-version
+	-no-allow-shlib-undefined \
+	-module -avoid-version
