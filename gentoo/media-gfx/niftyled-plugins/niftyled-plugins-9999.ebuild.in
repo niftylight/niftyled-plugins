@@ -15,7 +15,7 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~x86 ~amd64"
 
-IUSE="debug niftylino arduino"
+IUSE="debug niftylino arduino usb"
 
 RDEPEND="dev-libs/niftyled"
 
@@ -23,8 +23,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 REQUIRED_USE="
-	niftylino? ( usb )
-	arduino? ( usb )"
+	niftylino? ( usb )"
 
 
 
