@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-<herd>media-gfx</herd>
+<herd>niftylight</herd>
+<maintainer>
+  <email>daniel-gentoo@niftylight.de</email>
+</maintainer>
 <use>
-  <flag name="niftylino">Enable support for niftylino USB LED controller</flag>
-  <flag name="arduino">Enable support for arduino based LED controllers</flag>
+  <flag name='debug'>Compile for debugging (also modify CFLAGS and FEATURES</flag>
+  <flag name='usb'>Enable support for USB based hardware</flag>
+  <flag name='niftylino'>Enable support for niftylino USB LED controller</flag>
+  <flag name='arduino'>Enable support for arduino based LED controllers</flag>
 </use>
 </pkgmetadata>
