@@ -41,8 +41,8 @@ src_configure()
 {
 	econf \
                 $(use_enable debug) \
-                $(use_enable niftylino niftylino-plugin) \
-                $(use_enable arduino arduino_72xx-plugin)
+                $(use_enable niftylino plugin-niftylino) \
+                $(use_enable arduino plugin-arduino-72xx)
 }
 
 src_install() {
