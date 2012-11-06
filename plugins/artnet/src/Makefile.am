@@ -28,14 +28,14 @@ artnet_hardware_la_SOURCES = \
 artnet_hardware_la_CFLAGS = \
 	$(INCLUDE_DIRS) \
 	$(niftyled_CFLAGS) \
-	$(libartnet_CFLAGS) \
+	$(artnet_CFLAGS) \
 	$(COMMON_CFLAGS_N) \
 	$(DEBUG_CFLAGS)
 
 # link in additional libraries
 artnet_hardware_la_LIBADD = \
 	$(niftyled_LIBS) \
-	$(libartnet_LIBS) \
+	$(artnet_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags

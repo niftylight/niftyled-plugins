@@ -32,14 +32,14 @@ niftylino_hardware_la_SOURCES = \
 niftylino_hardware_la_CFLAGS = \
 	$(INCLUDE_DIRS) \
 	$(niftyled_CFLAGS) \
-	$(libusb_CFLAGS) \
+	$(usb_CFLAGS) \
 	$(COMMON_CFLAGS_N) \
 	$(DEBUG_CFLAGS)
 
 # link in additional libraries
 niftylino_hardware_la_LIBADD = \
 	$(niftyled_LIBS) \
-	$(libusb_LIBS) \
+	$(usb_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
