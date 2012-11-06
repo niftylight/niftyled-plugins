@@ -9,7 +9,7 @@
 AC_INIT([niftyled-plugins], m4_esyscmd([./version --short]), [http://github.com/niftylight/niftyled-plugins/issues], [niftyled-plugins], http://wiki.niftylight.de/Hardware-plugins)
 AC_COPYRIGHT([Copyright (C) 2006-2012 Daniel Hiepler])
 
-AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wall])
+AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wno-portability -Wall])
 AC_CONFIG_MACRO_DIR([m4])
 
 
