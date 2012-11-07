@@ -374,11 +374,11 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                 case LED_HW_LEDCOUNT:
                 {
 					/* resize buffer */
-					if(!(p->txBuffer = realloc(p->txBuffer, data->ledcount)))
+					/*if(!(p->txBuffer = realloc(p->txBuffer, data->ledcount)))
 					{
 						NFT_LOG_PERROR("realloc");
 						return NFT_FAILURE;
-					}
+					}*/
 						
 					/* save ledcount */
 					p->ledcount = data->ledcount;
