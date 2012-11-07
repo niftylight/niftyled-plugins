@@ -9,4 +9,4 @@ SUBDIRS = \
 	niftylino \
 	artnet \
 	arduino-max7219_max7221 \
-	LDP8806-SPI
+	LPD8806-SPI

@@ -42,11 +42,11 @@
  */
 
 
-#ifndef _NL_PLUGIN_LDP8806_SPI
-#define _NL_PLUGIN_LDP8806_SPI
+#ifndef _NL_PLUGIN_LPD8806_SPI
+#define _NL_PLUGIN_LPD8806_SPI
 
 
 
 
 
-#endif /* _NL_PLUGIN_LDP8806_SPI */
+#endif /* _NL_PLUGIN_LPD8806_SPI */

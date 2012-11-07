@@ -51,7 +51,7 @@
 #include <string.h>
 #include <niftyled.h>
 #include "config.h"
-#include "ldp8806-spi.h"
+#include "lpd8806-spi.h"
 
 
 
@@ -478,7 +478,7 @@ NftResult _show(void *privdata)
 LedHardwarePlugin hardware_descriptor =
 {
         /** family name of the plugin (lib{family}-hardware.so) */
-        .family = "ldp8806-spi",
+        .family = "lpd8806-spi",
 		/** api major version */
         .api_major = HW_PLUGIN_API_MAJOR_VERSION,
     	/** api minor version */
