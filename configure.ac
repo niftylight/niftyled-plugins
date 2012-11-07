@@ -119,6 +119,14 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 NL_WANT_PLUGIN_DUMMY=true
 AM_CONDITIONAL(NL_PLUGIN_DUMMY, test x$NL_WANT_PLUGIN_DUMMY = xtrue)
 
+# LDP8806 SPI plugin argument
+AC_ARG_ENABLE(
+	plugin-ldp8806-spi,
+	AS_HELP_STRING([--enable-plugin-ldp8806-spi], [Build LDP8806 SPI plugin]),
+	[ if test x$enableval = xno ; then NL_WANT_PLUGIN_LDP8806_SPI=false ; else NL_WANT_PLUGIN_LDP8806_SPI=true ; fi ],
+	[NL_WANT_PLUGIN_LDP8806_SPI=true])
+AM_CONDITIONAL(NL_PLUGIN_LDP8806_SPI, test x$NL_WANT_PLUGIN_LDP8806_SPI = xtrue)
+
 # arduino 72xx serial plugin argument
 AC_ARG_ENABLE(
 	plugin-arduino-72xx,
@@ -152,7 +160,7 @@ if test "x$NL_WANT_PLUGIN_DUMMY" = "xtrue" ; then BUILD_PLUGINS="dummy $BUILD_PL
 if test "x$NL_WANT_PLUGIN_ARDUINO_72XX" = "xtrue" ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_NIFTYLINO" = "xtrue" && test $HAVE_USB -eq 1 ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_ARTNET" = "xtrue" && test $HAVE_ARTNET -eq 1 ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
-
+if test "x$NL_WANT_PLUGIN_LDP8806_SPI" = "xtrue" ; then BUILD_PLUGINS="LDP8806-SPI $BUILD_PLUGINS" ; fi
 
 
 # --------------------------------
@@ -174,6 +182,9 @@ AC_CONFIG_FILES([
 	plugins/niftylino/Makefile
 	plugins/niftylino/src/Makefile
 	plugins/niftylino/tests/Makefile
+	plugins/LDP8806-SPI/Makefile
+	plugins/LDP8806-SPI/src/Makefile
+	plugins/LDP8806-SPI/tests/Makefile
 	debian/control.tmpl
 	gentoo/media-gfx/niftyled-plugins/niftyled-plugins-9999.ebuild])
 AC_OUTPUT

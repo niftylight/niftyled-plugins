@@ -10,6 +10,7 @@
   <flag name='usb'>Enable support for USB based hardware</flag>
   <flag name='niftylino'>Enable support for niftylino USB LED controller</flag>
   <flag name='arduino'>Enable support for arduino based LED controllers</flag>
+  <flag name='ldp8806-spi'>Enable support for LDP8806 LED drivers connected to SPI port</flag>
 </use>
 <bugs-to>http://github.com/niftylight/niftyled-plugins/issues</bugs-to>
 </pkgmetadata>

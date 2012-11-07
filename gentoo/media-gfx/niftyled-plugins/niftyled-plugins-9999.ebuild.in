@@ -15,7 +15,7 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~x86 ~amd64"
 
-IUSE="debug niftylino arduino usb"
+IUSE="debug ldp8806-spi niftylino arduino usb"
 
 RDEPEND="media-gfx/niftyled"
 
@@ -42,7 +42,8 @@ src_configure()
 	econf \
                 $(use_enable debug) \
                 $(use_enable niftylino plugin-niftylino) \
-                $(use_enable arduino plugin-arduino-72xx)
+                $(use_enable arduino plugin-arduino-72xx) \
+                $(use_enable ldp8806-spi plugin-ldp8806-spi)
 }
 
 src_install() {
