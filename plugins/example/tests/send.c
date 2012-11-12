@@ -71,9 +71,26 @@ int main(int argc, char *argv[])
                 return -1;
         }
 
-	
-		/* get pixelbuffer */
-		uint8_t *pixels = led_chain_get_buffer(led_hardware_get_chain(h));
+		/* get chain of this hardware */
+		LedChain *c = led_hardware_get_chain(h);
+		
+		/* set all LEDs to half brightness */
+		LedCount l;
+		for(l=0; l<led_chain_get_ledcount(c); l++)
+		{
+			led_chain_set_greyscale(c, l, 128);
+		}
+
+		/* send data to hardware */
+		led_hardware_send(h);
+
+		/* show previously sent hardware (latch to LEDs) */
+		led_hardware_show(h);
+
+
+		
+		/* ...or access raw pixelbuffer */
+		uint8_t *pixels = led_chain_get_buffer(c);
 
 		/* walk all pixels to turn on all LEDs */
 		int i;
