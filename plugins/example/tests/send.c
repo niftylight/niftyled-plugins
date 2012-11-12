@@ -53,7 +53,7 @@
 int main(int argc, char *argv[])
 {
         nft_log_level_set(L_DEBUG);
-        
+
         /* initialize new dummy hardware called "nlo01" */
         LedHardware *h;
         if(!(h = led_hardware_new("nlo01", "dummy")))
@@ -62,50 +62,50 @@ int main(int argc, char *argv[])
                 return -1;
         }
 
-		/* initialize any hardware that can be found (id="*"),
-           define 16 connected LEDs, pixeldata should be provided as
-           unsigned 8bit values in greyscale format */
+        /* initialize any hardware that can be found (id="*"), define 16
+         * connected LEDs, pixeldata should be provided as unsigned 8bit values 
+         * in greyscale format */
         if(!led_hardware_init(h, "*", 16, "Y u8"))
         {
                 NFT_LOG(L_ERROR, "failed to initialize hardware");
                 return -1;
         }
 
-		/* get chain of this hardware */
-		LedChain *c = led_hardware_get_chain(h);
-		
-		/* set all LEDs to half brightness */
-		LedCount l;
-		for(l=0; l<led_chain_get_ledcount(c); l++)
-		{
-			led_chain_set_greyscale(c, l, 128);
-		}
+        /* get chain of this hardware */
+        LedChain *c = led_hardware_get_chain(h);
 
-		/* send data to hardware */
-		led_hardware_send(h);
+        /* set all LEDs to half brightness */
+        LedCount l;
+        for(l = 0; l < led_chain_get_ledcount(c); l++)
+        {
+                led_chain_set_greyscale(c, l, 128);
+        }
 
-		/* show previously sent hardware (latch to LEDs) */
-		led_hardware_show(h);
+        /* send data to hardware */
+        led_hardware_send(h);
+
+        /* show previously sent hardware (latch to LEDs) */
+        led_hardware_show(h);
 
 
-		
-		/* ...or access raw pixelbuffer */
-		uint8_t *pixels = led_chain_get_buffer(c);
 
-		/* walk all pixels to turn on all LEDs */
-		int i;
-		for(i=0; i<16; i++)
-			pixels[i] = 0xff;
-        
-		/* send data to hardware */
-		led_hardware_send(h);
+        /* ...or access raw pixelbuffer */
+        uint8_t *pixels = led_chain_get_buffer(c);
 
-		/* show previously sent hardware (latch to LEDs) */
-		led_hardware_show(h);
+        /* walk all pixels to turn on all LEDs */
+        int i;
+        for(i = 0; i < 16; i++)
+                pixels[i] = 0xff;
 
-		
-		
-		/* deinitialize hardware */
+        /* send data to hardware */
+        led_hardware_send(h);
+
+        /* show previously sent hardware (latch to LEDs) */
+        led_hardware_show(h);
+
+
+
+        /* deinitialize hardware */
         led_hardware_deinit(h);
 
         return 0;

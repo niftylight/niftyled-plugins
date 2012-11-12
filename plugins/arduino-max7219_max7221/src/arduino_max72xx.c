@@ -59,98 +59,93 @@
 /** private info of our "hardware" */
 struct priv
 {
-	/* LedHardware descriptor for this plugin */
-        LedHardware *            hw;
-	/* id - for our plugin, path to tty */
-        char                     id[1024];
-	/* amount of LEDs connected to arduino */
-        LedCount                 ledcount;
-	/* buffer to contain our monochrome buffer */
-	unsigned char *		 buffer;
+        /* LedHardware descriptor for this plugin */
+        LedHardware *hw;
+        /* id - for our plugin, path to tty */
+        char id[1024];
+        /* amount of LEDs connected to arduino */
+        LedCount ledcount;
+        /* buffer to contain our monochrome buffer */
+        unsigned char *buffer;
         /* threshold to use for greyscale -> monochrome conversion */
-        unsigned char		 threshold;
-	/* scan limit for MAX72xx multiplexing */
-	unsigned char		 scan_limit;
-	/* file descriptor for serial port */
-	int			 fd;
-	/* place to save current termios of serial port */
-	struct termios		 oldtio;
+        unsigned char threshold;
+        /* scan limit for MAX72xx multiplexing */
+        unsigned char scan_limit;
+        /* file descriptor for serial port */
+        int fd;
+        /* place to save current termios of serial port */
+        struct termios oldtio;
 };
 
 
 
 
 /** send data packet to arduino */
-NftResult ad_txPacket(struct priv *p, 
-                      unsigned char opcode, 
-                      unsigned char *data, 
-                      unsigned char size)
+NftResult ad_txPacket(struct priv *p,
+                      unsigned char opcode,
+                      unsigned char *data, unsigned char size)
 {
 
-	/* send opcode */
-	if(write(p->fd, &opcode, 1) == -1)
-	{
-		NFT_LOG_PERROR("write()");
-		return NFT_FAILURE;
-	}
+        /* send opcode */
+        if(write(p->fd, &opcode, 1) == -1)
+        {
+                NFT_LOG_PERROR("write()");
+                return NFT_FAILURE;
+        }
 
-	
-	/* send datasize */
-	if(write(p->fd, &size, 1) == -1)
-	{
-		NFT_LOG_PERROR("write()");
-		return NFT_FAILURE;
-	}
-	
-	
-	/* send data */	
-	if(write(p->fd, data, (size_t) size) == -1)
-	{
-		NFT_LOG_PERROR("write()");
-		return NFT_FAILURE;
-	}
 
-	return NFT_SUCCESS;
+        /* send datasize */
+        if(write(p->fd, &size, 1) == -1)
+        {
+                NFT_LOG_PERROR("write()");
+                return NFT_FAILURE;
+        }
+
+
+        /* send data */
+        if(write(p->fd, data, (size_t) size) == -1)
+        {
+                NFT_LOG_PERROR("write()");
+                return NFT_FAILURE;
+        }
+
+        return NFT_SUCCESS;
 }
 
 
 /** send buffer to arduino */
-NftResult ad_sendBuffer(struct priv *p, 
-                        unsigned char *buf, 
-                        unsigned char size)
+NftResult ad_sendBuffer(struct priv * p,
+                        unsigned char *buf, unsigned char size)
 {
-	NFT_LOG(L_NOISY, "Uploading to arduino: %d bytes", size);
-	return ad_txPacket(p, OP_UPLOAD, buf, size);
+        NFT_LOG(L_NOISY, "Uploading to arduino: %d bytes", size);
+        return ad_txPacket(p, OP_UPLOAD, buf, size);
 }
 
 
 /** latch previously sent data to LEDs */
-NftResult ad_latch(struct priv *p)
+NftResult ad_latch(struct priv * p)
 {
-	return ad_txPacket(p, OP_LATCH, NULL, 0);
+        return ad_txPacket(p, OP_LATCH, NULL, 0);
 }
 
 
 /** set scan limit */
-NftResult ad_setScanLimit(struct priv *p, 
-                          unsigned char scan_limit)
+NftResult ad_setScanLimit(struct priv * p, unsigned char scan_limit)
 {
-	return ad_txPacket(p, OP_SET_SCANLIMIT, &scan_limit, 1);
+        return ad_txPacket(p, OP_SET_SCANLIMIT, &scan_limit, 1);
 }
 
 
 /** set amount of MAX72xx chips connected to arduino */
-NftResult ad_setChipcount(struct priv *p, 
-                          unsigned char chipcount)
+NftResult ad_setChipcount(struct priv * p, unsigned char chipcount)
 {
-	return ad_txPacket(p, OP_SET_CHIPCOUNT, &chipcount, 1);
+        return ad_txPacket(p, OP_SET_CHIPCOUNT, &chipcount, 1);
 }
 
 /** set intensity */
-NftResult ad_setIntensity(struct priv *p, 
-                          unsigned char intensity)
+NftResult ad_setIntensity(struct priv * p, unsigned char intensity)
 {
-	return ad_txPacket(p, OP_SET_GAIN, &intensity, 1);
+        return ad_txPacket(p, OP_SET_GAIN, &intensity, 1);
 }
 
 
@@ -170,40 +165,42 @@ NftResult ad_setIntensity(struct priv *p,
  * @param h LedHardware descriptor belonging to this plugin
  * @result NFT_SUCCESS or NFT_FAILURE upon error
  */
-static NftResult _init(void **privdata, LedHardware *h)
+static NftResult _init(void **privdata, LedHardware * h)
 {
         NFT_LOG(L_DEBUG, "Initializing arduino-max72xx plugin...");
 
-	
+
         /* allocate private structure */
         struct priv *p;
-        if(!(p = calloc(1,sizeof(struct priv))))
+        if(!(p = calloc(1, sizeof(struct priv))))
         {
                 NFT_LOG_PERROR("calloc");
                 return NFT_FAILURE;
         }
 
-	
+
         /* register our config-structure */
         *privdata = p;
-        
+
         /* save our hardware descriptor */
         p->hw = h;
 
-	
+
         /* defaults */
         p->ledcount = 0;
-	p->threshold = 128;
-	
-	/* 
+        p->threshold = 128;
+
+        /* 
          * register some dynamic properties for this plugin - those will be
          * set/read in the _get/set_handler() from this plugin
          */
-    	if(!led_hardware_plugin_prop_register(h, "threshold", LED_HW_CUSTOM_PROP_INT))
+        if(!led_hardware_plugin_prop_register
+           (h, "threshold", LED_HW_CUSTOM_PROP_INT))
                 return NFT_FAILURE;
-	if(!led_hardware_plugin_prop_register(h, "scan_limit", LED_HW_CUSTOM_PROP_INT))
+        if(!led_hardware_plugin_prop_register
+           (h, "scan_limit", LED_HW_CUSTOM_PROP_INT))
                 return NFT_FAILURE;
-        
+
         return NFT_SUCCESS;
 }
 
@@ -218,17 +215,17 @@ static NftResult _init(void **privdata, LedHardware *h)
  */
 static void _deinit(void *privdata)
 {
-        NFT_LOG(L_DEBUG, "Deinitializing arduino-max72xx plugin...");   
+        NFT_LOG(L_DEBUG, "Deinitializing arduino-max72xx plugin...");
 
         struct priv *p = privdata;
-        
+
         /* unregister or settings-handlers */
         led_hardware_plugin_prop_unregister(p->hw, "threshold");
-	led_hardware_plugin_prop_unregister(p->hw, "scan_limit");
-	
-	/* free buffer */
-	free(p->buffer);
-	
+        led_hardware_plugin_prop_unregister(p->hw, "scan_limit");
+
+        /* free buffer */
+        free(p->buffer);
+
         /* free structure we allocated in _init() */
         free(privdata);
 }
@@ -245,65 +242,69 @@ static NftResult _hw_init(void *privdata, const char *id)
         struct priv *p = privdata;
 
         /* ... do checks ... */
-        
+
         /* pixelformat supported? */
-        LedPixelFormat *format = led_chain_get_format(led_hardware_get_chain(p->hw));
+        LedPixelFormat *format =
+                led_chain_get_format(led_hardware_get_chain(p->hw));
         if(led_pixel_format_get_bytes_per_pixel(format) != 1)
-	{
-		NFT_LOG(L_ERROR, "This hardware only supports 1 bpp formats (e.g. \"Y u8\")");
-		return NFT_FAILURE;
-	}
-	
+        {
+                NFT_LOG(L_ERROR,
+                        "This hardware only supports 1 bpp formats (e.g. \"Y u8\")");
+                return NFT_FAILURE;
+        }
+
         if(led_pixel_format_get_n_components(format) != 1)
-	{
-		NFT_LOG(L_ERROR, "This hardware only supports 1 component per pixel (e.g. \"Y u8\")");
-		return NFT_FAILURE;
-	}
+        {
+                NFT_LOG(L_ERROR,
+                        "This hardware only supports 1 component per pixel (e.g. \"Y u8\")");
+                return NFT_FAILURE;
+        }
 
-        const char *fmtstring = led_pixel_format_to_string(led_chain_get_format(
-                                                led_hardware_get_chain(p->hw)));
+        const char *fmtstring =
+                led_pixel_format_to_string(led_chain_get_format
+                                           (led_hardware_get_chain(p->hw)));
         NFT_LOG(L_DEBUG, "Using \"%s\" as pixel-format", fmtstring);
-        
+
         /* 
-	 * check if id = "*" in this case we should try to automagically find our device,
-	 * we'll just use a default in this case 
-	 */
-	if(strcmp(id, "*") == 0)
-	{
-		strncpy(p->id, "/dev/ttyUSB0", sizeof(p->id));
-	}
-	else
-	{
-	    	/* copy our id (and/or change it) */
-	    	strncpy(p->id, id, sizeof(p->id));
-	}
+         * check if id = "*" in this case we should try to automagically find our device,
+         * we'll just use a default in this case 
+         */
+        if(strcmp(id, "*") == 0)
+        {
+                strncpy(p->id, "/dev/ttyUSB0", sizeof(p->id));
+        }
+        else
+        {
+                /* copy our id (and/or change it) */
+                strncpy(p->id, id, sizeof(p->id));
+        }
 
-	/* open serial port */
-	if((p->fd = open(p->id, O_RDWR | O_NOCTTY)) == -1)
-	{
-		NFT_LOG(L_ERROR, "Failed to open port \"%s\"", p->id);
-		NFT_LOG_PERROR("open()");
-		return NFT_FAILURE;
-	}
+        /* open serial port */
+        if((p->fd = open(p->id, O_RDWR | O_NOCTTY)) == -1)
+        {
+                NFT_LOG(L_ERROR, "Failed to open port \"%s\"", p->id);
+                NFT_LOG_PERROR("open()");
+                return NFT_FAILURE;
+        }
 
-	/* save current port settings */
-	tcgetattr(p->fd,&p->oldtio); 
-	
-      	/* space for new tio structure */
-	struct termios newtio;
-	memset(&newtio, 0, sizeof(struct termios));
-	
-	/* set new port settings */
-	newtio.c_cflag = B115200 | CS8 | CSTOPB | CLOCAL | CREAD;
+        /* save current port settings */
+        tcgetattr(p->fd, &p->oldtio);
+
+        /* space for new tio structure */
+        struct termios newtio;
+        memset(&newtio, 0, sizeof(struct termios));
+
+        /* set new port settings */
+        newtio.c_cflag = B115200 | CS8 | CSTOPB | CLOCAL | CREAD;
         newtio.c_iflag = IGNPAR | IGNBRK;
         newtio.c_oflag = 0;
-        newtio.c_lflag = 0;       
-        newtio.c_cc[VMIN]=1;
-        newtio.c_cc[VTIME]=5;
+        newtio.c_lflag = 0;
+        newtio.c_cc[VMIN] = 1;
+        newtio.c_cc[VTIME] = 5;
         tcflush(p->fd, TCIFLUSH);
-        tcsetattr(p->fd,TCSANOW,&newtio);
+        tcsetattr(p->fd, TCSANOW, &newtio);
 
-	
+
         return NFT_SUCCESS;
 }
 
@@ -315,14 +316,14 @@ static void _hw_deinit(void *privdata)
 {
         NFT_LOG(L_DEBUG, "Deinitializing arduino-max72xx hardware");
 
-	struct priv *p = privdata;
-	
-	/* restore old serial port settings */
-	tcflush(p->fd, TCIFLUSH);
-        tcsetattr(p->fd,TCSANOW,&p->oldtio);
-	
-	/* close serial port */
-	close(p->fd);
+        struct priv *p = privdata;
+
+        /* restore old serial port settings */
+        tcflush(p->fd, TCIFLUSH);
+        tcsetattr(p->fd, TCSANOW, &p->oldtio);
+
+        /* close serial port */
+        close(p->fd);
 }
 
 
@@ -330,70 +331,78 @@ static void _hw_deinit(void *privdata)
  * plugin getter - this will be called if core wants to get stuff from the plugin
  * @note you don't need to implement a getter for every single LedPluginParam
  */
-NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _get_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
         struct priv *p = privdata;
-        
+
         /** decide about object to give back to the core (s. hardware.h) */
-        switch(o)
+        switch (o)
         {
                 case LED_HW_ID:
                 {
-		    	NFT_LOG(L_DEBUG, "Getting id of arduino-max72xx hardware (%s)",
-			            p->id);
-		    
+                        NFT_LOG(L_DEBUG,
+                                "Getting id of arduino-max72xx hardware (%s)",
+                                p->id);
+
                         data->id = p->id;
                         return NFT_SUCCESS;
                 }
 
                 case LED_HW_LEDCOUNT:
                 {
-		    	NFT_LOG(L_DEBUG, "Getting arduino-max72xx hardware (%s) ledcount (%d LEDs)",
-			            p->id, data->ledcount);
-		    
+                        NFT_LOG(L_DEBUG,
+                                "Getting arduino-max72xx hardware (%s) ledcount (%d LEDs)",
+                                p->id, data->ledcount);
+
                         data->ledcount = p->ledcount;
                         return NFT_SUCCESS;
                 }
 
-		case LED_HW_GAIN:
-	    	{
-			NFT_LOG(L_INFO, "Getting gain of LED %d from arduino-max72xx hardware (%s)",
-			        data->gain.pos, p->id);
+                case LED_HW_GAIN:
+                {
+                        NFT_LOG(L_INFO,
+                                "Getting gain of LED %d from arduino-max72xx hardware (%s)",
+                                data->gain.pos, p->id);
 
-			/* @todo */
-			data->gain.value = 0;
-			return NFT_SUCCESS;
-		}
+                        /* @todo */
+                        data->gain.value = 0;
+                        return NFT_SUCCESS;
+                }
 
-                /* handle dynamic custom properties - 
-                   we have to fill in data->custom.value.[s|i|f] and
-                   data->custom.valuesize */
+                        /* handle dynamic custom properties - we have to fill
+                         * in data->custom.value.[s|i|f] and
+                         * data->custom.valuesize */
                 case LED_HW_CUSTOM_PROP:
                 {
-			/* @todo bugs ahead, will show with debug 
-			   @todo fix chain != config output */
+                        /* @todo bugs ahead, will show with debug @todo fix
+                         * chain != config output */
                         if(strcmp(data->custom.name, "threshold") == 0)
                         {
                                 data->custom.value.i = (int) p->threshold;
                                 data->custom.valuesize = sizeof(int);
-				return NFT_SUCCESS;
+                                return NFT_SUCCESS;
                         }
-			else if(strcmp(data->custom.name, "scan_limit") == 0)
-                        {				
+                        else if(strcmp(data->custom.name, "scan_limit") == 0)
+                        {
                                 data->custom.value.i = (int) p->scan_limit;
                                 data->custom.valuesize = sizeof(int);
-				return NFT_SUCCESS;
+                                return NFT_SUCCESS;
                         }
                         else
                         {
-                                NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
+                                NFT_LOG(L_ERROR,
+                                        "Unhandled custom property \"%s\"",
+                                        data->custom.name);
                                 return NFT_FAILURE;
                         }
                 }
-                        
+
                 default:
                 {
-                        NFT_LOG(L_ERROR, "Request to get unhandled object \"%d\" from plugin", o);
+                        NFT_LOG(L_ERROR,
+                                "Request to get unhandled object \"%d\" from plugin",
+                                o);
                         return NFT_FAILURE;
                 }
         }
@@ -406,12 +415,13 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
  * plugin setter - this will be called if core wants to set stuff
  * @note you don't need to implement a setter for every LedPluginParam
  */
-NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _set_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
         struct priv *p = privdata;
-        
+
         /** decide about type of data (s. hardware.h) */
-        switch(o)
+        switch (o)
         {
                 case LED_HW_ID:
                 {
@@ -421,87 +431,102 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 
                 case LED_HW_LEDCOUNT:
                 {
-			/* validate range */
-			if(data->ledcount > 512)
-			{
-				NFT_LOG(L_ERROR, "This hardware can't control less than 0 or more than 512 LEDs");
-				return NFT_SUCCESS;
-			}
+                        /* validate range */
+                        if(data->ledcount > 512)
+                        {
+                                NFT_LOG(L_ERROR,
+                                        "This hardware can't control less than 0 or more than 512 LEDs");
+                                return NFT_SUCCESS;
+                        }
 
-			/* ledcount must be a multiple of 8 */
-			/*if(data->ledcount % 8 != 0)
-			{
-				p->ledcount = (data->ledcount/8+1)*8;
-				NFT_LOG(L_WARNING, "Ledcount (%d) is no multiple of 8, using %d.", data->ledcount, p->ledcount);
-			}
-			else
-			{*/
-                        	p->ledcount = data->ledcount;
-			/*}*/
+                        /* ledcount must be a multiple of 8 */
+                        /* if(data->ledcount % 8 != 0) { p->ledcount =
+                         * (data->ledcount/8+1)*8; NFT_LOG(L_WARNING, "Ledcount 
+                         * (%d) is no multiple of 8, using %d.",
+                         * data->ledcount, p->ledcount); } else { */
+                        p->ledcount = data->ledcount;
+                        /* } */
 
-			/* set chipcount at arduino */
-			char chipcount = (char) (p->ledcount%64 == 0 ? p->ledcount/64 : p->ledcount/8+1);
-			NFT_LOG(L_DEBUG, "Setting chipcount to %d", chipcount);
-			
-			return ad_setChipcount(p, chipcount);
+                        /* set chipcount at arduino */
+                        char chipcount =
+                                (char) (p->ledcount % 64 ==
+                                        0 ? p->ledcount / 64 : p->ledcount /
+                                        8 + 1);
+                        NFT_LOG(L_DEBUG, "Setting chipcount to %d",
+                                chipcount);
+
+                        return ad_setChipcount(p, chipcount);
                 }
 
-		case LED_HW_GAIN:
-		{
-			NFT_TODO();
-			return NFT_SUCCESS;
-		}
-			
-                 /* handle dynamic custom properties - 
-                   we can read out data->custom.value.[s|i|f] and
-                   data->custom.valuesize */
+                case LED_HW_GAIN:
+                {
+                        NFT_TODO();
+                        return NFT_SUCCESS;
+                }
+
+                        /* handle dynamic custom properties - we can read out
+                         * data->custom.value.[s|i|f] and
+                         * data->custom.valuesize */
                 case LED_HW_CUSTOM_PROP:
                 {
                         if(strcmp(data->custom.name, "threshold") == 0)
                         {
-				/* validate */
-				if(data->custom.value.i < 0 || data->custom.value.i > 255)
-				{
-					NFT_LOG(L_ERROR, "threshold may only be 0-255. Not changing it.");
-					return NFT_FAILURE;
-				}
-				
+                                /* validate */
+                                if(data->custom.value.i < 0 ||
+                                   data->custom.value.i > 255)
+                                {
+                                        NFT_LOG(L_ERROR,
+                                                "threshold may only be 0-255. Not changing it.");
+                                        return NFT_FAILURE;
+                                }
+
                                 /* set new value */
-                                p->threshold = (unsigned char) data->custom.value.i;
-				
-                                NFT_LOG(L_DEBUG, "Setting \"threshold\" of \"%s\" to %d", p->id, p->threshold);
-				
-				return NFT_SUCCESS;
+                                p->threshold =
+                                        (unsigned char) data->custom.value.i;
+
+                                NFT_LOG(L_DEBUG,
+                                        "Setting \"threshold\" of \"%s\" to %d",
+                                        p->id, p->threshold);
+
+                                return NFT_SUCCESS;
                         }
-			else if(strcmp(data->custom.name, "scan_limit") == 0)
+                        else if(strcmp(data->custom.name, "scan_limit") == 0)
                         {
-				/* validate */
-				if(data->custom.value.i < 0 || data->custom.value.i >= 8)
-				{
-					NFT_LOG(L_ERROR, "Scan limit %d outside range (0-7)", data->custom.value.i);
-					return NFT_FAILURE;
-				}
-				
+                                /* validate */
+                                if(data->custom.value.i < 0 ||
+                                   data->custom.value.i >= 8)
+                                {
+                                        NFT_LOG(L_ERROR,
+                                                "Scan limit %d outside range (0-7)",
+                                                data->custom.value.i);
+                                        return NFT_FAILURE;
+                                }
+
                                 /* set new value */
-                                p->scan_limit = (unsigned char) data->custom.value.i;
-                                NFT_LOG(L_DEBUG, "Setting \"scan_limit\" of \"%s\" to %d", p->id, p->threshold);
-				ad_setScanLimit(p, p->scan_limit);
-				
-				return NFT_SUCCESS;
+                                p->scan_limit =
+                                        (unsigned char) data->custom.value.i;
+                                NFT_LOG(L_DEBUG,
+                                        "Setting \"scan_limit\" of \"%s\" to %d",
+                                        p->id, p->threshold);
+                                ad_setScanLimit(p, p->scan_limit);
+
+                                return NFT_SUCCESS;
                         }
                         else
                         {
-                                NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
+                                NFT_LOG(L_ERROR,
+                                        "Unhandled custom property \"%s\"",
+                                        data->custom.name);
                                 return NFT_FAILURE;
                         }
                 }
-                        
+
                 default:
                 {
                         return NFT_SUCCESS;
                 }
         }
-        
+
         return NFT_FAILURE;
 }
 
@@ -511,39 +536,41 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
  * data is received to avoid blanking. If the data is shown immediately, you have
  * to transmit it in _show() 
  */
-NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
+NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
 {
-        NFT_LOG(L_DEBUG, "Sending arduino-max72xx data");       
+        NFT_LOG(L_DEBUG, "Sending arduino-max72xx data");
 
-	struct priv *p = privdata;
-	
-	/* 8 bits-per-pixel buffer as given by niftyled */
+        struct priv *p = privdata;
+
+        /* 8 bits-per-pixel buffer as given by niftyled */
         unsigned char *buffer = led_chain_get_buffer(c);
         /* 1 bit-per-pixel buffer as needed by arduino */
-	unsigned char packed[64];
+        unsigned char packed[64];
 
-	/* clear buffer */
-	memset(packed, 0, sizeof(packed));
-		
-	/* convert to 8bpp to 1bpp */
-	unsigned int i;
-	for(i=0; i < p->ledcount; i++)
-	{
-		packed[i/8] = packed[i/8] << 1;
-		
-		if(buffer[i] >= p->threshold)
-			packed[i/8] |= 1;
-	}
+        /* clear buffer */
+        memset(packed, 0, sizeof(packed));
 
-	
-	NFT_LOG(L_NOISY, "Packed buffer: %x %x %x %x %x %x %x %x", 
-	        packed[0], packed[1], packed[2], packed[3],
-  		packed[4], packed[5], packed[6], packed[7]); 
+        /* convert to 8bpp to 1bpp */
+        unsigned int i;
+        for(i = 0; i < p->ledcount; i++)
+        {
+                packed[i / 8] = packed[i / 8] << 1;
+
+                if(buffer[i] >= p->threshold)
+                        packed[i / 8] |= 1;
+        }
 
 
-	/* send buffer */
-	ad_sendBuffer(p, packed, (p->ledcount%8 == 0 ? p->ledcount/8 : p->ledcount/8+1));
-                
+        NFT_LOG(L_NOISY, "Packed buffer: %x %x %x %x %x %x %x %x",
+                packed[0], packed[1], packed[2], packed[3],
+                packed[4], packed[5], packed[6], packed[7]);
+
+
+        /* send buffer */
+        ad_sendBuffer(p, packed,
+                      (p->ledcount % 8 ==
+                       0 ? p->ledcount / 8 : p->ledcount / 8 + 1));
+
         return NFT_SUCCESS;
 }
 
@@ -560,10 +587,10 @@ NftResult _show(void *privdata)
 {
         NFT_LOG(L_DEBUG, "Showing arduino-max72xx data");
 
-	struct priv *p = privdata;
-	
-	ad_latch(p);
-	
+        struct priv *p = privdata;
+
+        ad_latch(p);
+
         return NFT_SUCCESS;
 }
 
@@ -572,15 +599,14 @@ NftResult _show(void *privdata)
 
 
 /** descriptor of hardware-plugin passed to the library */
-LedHardwarePlugin hardware_descriptor =
-{
+LedHardwarePlugin hardware_descriptor = {
         /** family name of the plugin (lib{family}-hardware.so) */
         .family = "arduino-max72xx",
-	/** api major version */
+        /** api major version */
         .api_major = HW_PLUGIN_API_MAJOR_VERSION,
-    	/** api minor version */
+        /** api minor version */
         .api_minor = HW_PLUGIN_API_MINOR_VERSION,
-    	/** api micro version */
+        /** api micro version */
         .api_micro = HW_PLUGIN_API_MICRO_VERSION,
         /** plugin version major */
         .major_version = 0,
@@ -590,7 +616,8 @@ LedHardwarePlugin hardware_descriptor =
         .micro_version = 1,
         .license = "GPL",
         .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2012",
-        .description = "Plugin to control MAX7219/MAX7221 and compatible connected to an arduino through a virtual serial port",
+        .description =
+                "Plugin to control MAX7219/MAX7221 and compatible connected to an arduino through a virtual serial port",
         .url = PACKAGE_URL,
         .id_example = "/dev/ttyUSB0",
         .plugin_init = _init,

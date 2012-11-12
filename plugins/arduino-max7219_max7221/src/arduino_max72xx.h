@@ -50,17 +50,17 @@
 /** OPCODES to control our arduino via USB */
 typedef enum
 {
-	/** set intensity of LEDs */
-	OP_SET_GAIN,
-	/** set amount of connected chips */
-	OP_SET_CHIPCOUNT,
-	/** set scanlimit */
-	OP_SET_SCANLIMIT,
-	/** send previously received data to LEDs */
-	OP_LATCH,
-	/** receive pixel data */
-	OP_UPLOAD,
-}ArduinoOperation;
+        /** set intensity of LEDs */
+        OP_SET_GAIN,
+        /** set amount of connected chips */
+        OP_SET_CHIPCOUNT,
+        /** set scanlimit */
+        OP_SET_SCANLIMIT,
+        /** send previously received data to LEDs */
+        OP_LATCH,
+        /** receive pixel data */
+        OP_UPLOAD,
+} ArduinoOperation;
 
 
 

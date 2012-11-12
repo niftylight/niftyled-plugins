@@ -55,13 +55,14 @@
 
 
 /** send message + payload to adapter */
-static NftResult _adapter_usb_send(Niftylino *n, uint message, char *payload, size_t payload_size)
+static NftResult _adapter_usb_send(Niftylino * n, uint message, char *payload,
+                                   size_t payload_size)
 {
         if(!n->usb_handle)
                 NFT_LOG_NULL(NFT_FAILURE);
 
         if(usb_control_msg(n->usb_handle, RECV_EP, message, 0, 0,
-                       payload, payload_size, n->usb_timeout) < 0)
+                           payload, payload_size, n->usb_timeout) < 0)
                 return NFT_FAILURE;
 
         return NFT_SUCCESS;
@@ -86,35 +87,33 @@ static NftResult _adapter_usb_send(Niftylino *n, uint message, char *payload, si
 
 
 /** send gain value of LED */
-static NftResult _set_gain(Niftylino *n, LedCount led, LedGain gain)
+static NftResult _set_gain(Niftylino * n, LedCount led, LedGain gain)
 {
         if(!n)
                 NFT_LOG_NULL(NFT_FAILURE);;
 
-        if (led%LEDS_PER_CHIP != 0)
+        if(led % LEDS_PER_CHIP != 0)
                 return NFT_SUCCESS;
-        
+
         /* used to set the gain of one chip in a chain */
         struct
         {
-            uint32_t chip;
-            uint8_t gain;
+                uint32_t chip;
+                uint8_t gain;
         } _Gain =
         {
-                .chip = led/LEDS_PER_CHIP,
-                /* scale gain from (0x0 - 0xffff) to (0x0 - 0xff) */
-                .gain = (uint8_t) (gain*255/LED_GAIN_MAX),
-        };
+                .chip = led / LEDS_PER_CHIP,
+                        /* scale gain from (0x0 - 0xffff) to (0x0 - 0xff) */
+        .gain = (uint8_t) (gain * 255 / LED_GAIN_MAX),};
 
         return _adapter_usb_send(n, NIFTY_SET_GAIN_NO_PROPAGATE,
-                               (char *) &_Gain,
-                               sizeof(_Gain));
-        
+                                 (char *) &_Gain, sizeof(_Gain));
+
 }
 
 
 /** set amount of LEDs connected to niftylino */
-static NftResult _set_ledcount(Niftylino *n, LedCount ledcount)
+static NftResult _set_ledcount(Niftylino * n, LedCount ledcount)
 {
         if(!n)
                 NFT_LOG_NULL(NFT_FAILURE);
@@ -122,13 +121,13 @@ static NftResult _set_ledcount(Niftylino *n, LedCount ledcount)
         struct
         {
                 uint32_t leds;
-        }_Chainlength;
+        } _Chainlength;
 
-         _Chainlength.leds = ledcount;
+        _Chainlength.leds = ledcount;
 
         return _adapter_usb_send(n, NIFTY_SET_CHAINLENGTH,
-                            (char *) &_Chainlength,
-                            sizeof(_Chainlength));
+                                 (char *) &_Chainlength,
+                                 sizeof(_Chainlength));
 }
 
 /** set width of brightness-values */
@@ -138,21 +137,20 @@ static NftResult _set_format(void *privdata, NiftylinoValueWidth w)
 
         if(!n)
                 NFT_LOG_NULL(NFT_FAILURE);
-        
-        
+
+
         /* used to set input-data fieldwidth */
         static struct
         {
-            uint32_t width;
-        }_Bitwidth;
+                uint32_t width;
+        } _Bitwidth;
 
         /* insert value-width */
         _Bitwidth.width = w;
-        
+
         /* send bitwidth */
-        return _adapter_usb_send(n, NIFTY_SET_INPUT_BITWIDTH, 
-                             (char *) &_Bitwidth, 
-                             sizeof(_Bitwidth));
+        return _adapter_usb_send(n, NIFTY_SET_INPUT_BITWIDTH,
+                                 (char *) &_Bitwidth, sizeof(_Bitwidth));
 }
 
 /*******************************************************************************
@@ -162,7 +160,7 @@ static NftResult _set_format(void *privdata, NiftylinoValueWidth w)
 /**
  * initialize this plugin
  */
-static NftResult _init(void **privdata, LedHardware *hw)
+static NftResult _init(void **privdata, LedHardware * hw)
 {
         /** create niftylino descriptor */
         Niftylino *n;
@@ -171,16 +169,16 @@ static NftResult _init(void **privdata, LedHardware *hw)
                 NFT_LOG_PERROR("calloc");
                 return NFT_FAILURE;
         }
-        
+
         /* save Niftylino descriptor as private-data */
         *privdata = n;
 
         /* initialize default usb timeout */
         n->usb_timeout = 2500;
 
-	/* save our hardware descriptor for later */
-	n->hw = hw;
-	
+        /* save our hardware descriptor for later */
+        n->hw = hw;
+
         /* initialize usb subsystem */
         usb_init();
 
@@ -192,9 +190,9 @@ static NftResult _init(void **privdata, LedHardware *hw)
                 level = 2;
         else if(nft_log_level_get() >= L_WARNING)
                 level = 1;
-        
+
         usb_set_debug(level);
-        
+
         return NFT_SUCCESS;
 }
 
@@ -209,7 +207,7 @@ static void _deinit(void *privdata)
         Niftylino *n = privdata;
         if(n)
                 free(n);
-                
+
 }
 
 
@@ -233,63 +231,64 @@ static NftResult _usb_init(void *privdata, const char *id)
 
         /* pixel-format of our chain */
         LedPixelFormat *format = led_chain_get_format(chain);
-        
+
         /* pixelformat supported? */
         NiftylinoValueWidth vw;
-        switch(led_pixel_format_get_bytes_per_pixel(format) /
+        switch (led_pixel_format_get_bytes_per_pixel(format) /
                 led_pixel_format_get_n_components(format))
         {
-                /* 8 bit values */
+                        /* 8 bit values */
                 case 1:
                 {
                         vw = NIFTYLINO_8BIT_VALUES;
                         break;
                 }
 
-                /* 16 bit values */
+                        /* 16 bit values */
                 case 2:
                 {
                         vw = NIFTYLINO_16BIT_VALUES;
                         break;
                 }
 
-                /* unsupported format */
+                        /* unsupported format */
                 default:
                 {
-                        NFT_LOG(L_ERROR, "Unsupported format requested: %d bytes-per-pixel, %d components-per-pixel",
+                        NFT_LOG(L_ERROR,
+                                "Unsupported format requested: %d bytes-per-pixel, %d components-per-pixel",
                                 led_pixel_format_get_bytes_per_pixel(format),
                                 led_pixel_format_get_n_components(format));
-                        
+
                         return NFT_FAILURE;
                 }
         }
-        
-        
+
+
         /* find (new) busses */
         usb_find_busses();
 
         /* find (new) devices */
         usb_find_devices();
-                
-        
+
+
 
         /* open niftylino usb-device */
         char serial[255];
 
         /* walk all busses */
-        for (bus = usb_get_busses(); bus; bus = bus->next)
+        for(bus = usb_get_busses(); bus; bus = bus->next)
         {
                 /* walk all devices on bus */
-                for (dev = bus->devices; dev; dev = dev->next)
+                for(dev = bus->devices; dev; dev = dev->next)
                 {
                         /* found niftylino? */
-                        if ((dev->descriptor.idVendor != VENDOR_ID) ||
-                                (dev->descriptor.idProduct != PRODUCT_ID))
+                        if((dev->descriptor.idVendor != VENDOR_ID) ||
+                           (dev->descriptor.idProduct != PRODUCT_ID))
                         {
                                 continue;
                         }
-                        
-                        
+
+
                         /* try to open */
                         if(!(h = usb_open(dev)))
                                 /* device allready open or other error */
@@ -299,19 +298,20 @@ static NftResult _usb_init(void *privdata, const char *id)
                         char driver[1024];
                         if(!(usb_get_driver_np(h, 0, driver, sizeof(driver))))
                         {
-                                //NFT_LOG(L_ERROR, "Device already claimed by \"%s\"", driver);
+                                // NFT_LOG(L_ERROR, "Device already claimed by
+                                // \"%s\"", driver);
                                 continue;
                         }
 
                         /* reset device */
                         usb_reset(h);
                         usb_close(h);
-                        //~ if(usb_reset(h) < 0)
-                        //~ {
-                            //~ /* reset failed */
-                            //~ usb_close(h);
-                            //~ continue;
-                        //~ }
+                        // ~ if(usb_reset(h) < 0)
+                        // ~ {
+                        // ~ /* reset failed */
+                        // ~ usb_close(h);
+                        // ~ continue;
+                        // ~ }
 
                         /* re-open */
                         if(!(h = usb_open(dev)))
@@ -319,48 +319,53 @@ static NftResult _usb_init(void *privdata, const char *id)
                                 continue;
 
                         /* clear any previous halt status */
-                        //usb_clear_halt(h, 0);
-                        
+                        // usb_clear_halt(h, 0);
+
                         /* claim interface */
                         if(usb_claim_interface(h, 0) < 0)
                         {
-                            /* device claim failed */
-                            usb_close(h);
-                            continue;
+                                /* device claim failed */
+                                usb_close(h);
+                                continue;
                         }
 
                         /* receive string-descriptor (serial number) */
-                        if(usb_get_string_simple(h, 3, serial, sizeof(serial)) < 0)
+                        if(usb_get_string_simple(h, 3, serial, sizeof(serial))
+                           < 0)
                         {
-                            usb_release_interface(h, 0);
-                            usb_close(h);
-                            continue;
+                                usb_release_interface(h, 0);
+                                usb_close(h);
+                                continue;
                         }
 
-                        
-                        /* device id == requested id? (or wildcard id requested? */
-                        if(strlen(n->id) == 0 || strncmp(n->id, serial, sizeof(serial)) == 0 || strncmp(n->id, "*", 1) == 0)
-                        {                                        
+
+                        /* device id == requested id? (or wildcard id
+                         * requested? */
+                        if(strlen(n->id) == 0 ||
+                           strncmp(n->id, serial, sizeof(serial)) == 0 ||
+                           strncmp(n->id, "*", 1) == 0)
+                        {
                                 /* serial-number... */
                                 strncpy(n->id, serial, sizeof(n->id));
                                 /* usb device handle */
                                 n->usb_handle = h;
 
                                 /* set format */
-                                NFT_LOG(L_DEBUG, "Setting bitwidth to %d bit", 
-                                        (vw == NIFTYLINO_8BIT_VALUES ? 8 : 16));
-                                
+                                NFT_LOG(L_DEBUG, "Setting bitwidth to %d bit",
+                                        (vw ==
+                                         NIFTYLINO_8BIT_VALUES ? 8 : 16));
+
                                 if(!_set_format(privdata, vw))
                                         return NFT_FAILURE;
-                                
+
                                 return NFT_SUCCESS;
                         }
 
                         /* close this adapter */
                         usb_release_interface(h, 0);
                         usb_close(h);
-                        
-                
+
+
                 }
         }
 
@@ -374,10 +379,10 @@ static NftResult _usb_init(void *privdata, const char *id)
 static void _usb_deinit(void *privdata)
 {
         Niftylino *n = privdata;
-        
+
         if(!(n->usb_handle))
-           return;
-           
+                return;
+
         usb_release_interface(n->usb_handle, 0);
         usb_close(n->usb_handle);
         n->usb_handle = NULL;
@@ -386,12 +391,13 @@ static void _usb_deinit(void *privdata)
 /**
  * plugin getter - this will be called if core wants to get stuff
  */
-NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _get_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
         Niftylino *n = privdata;
-        
+
         /** decide about object to give back to the core (s. hardware.h) */
-        switch(o)
+        switch (o)
         {
                 case LED_HW_ID:
                 {
@@ -404,10 +410,11 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                         data->ledcount = n->ledcount;
                         return NFT_SUCCESS;
                 }
-                        
+
                 default:
                 {
-                        NFT_LOG(L_ERROR, "Request to get unhandled object from plugin");
+                        NFT_LOG(L_ERROR,
+                                "Request to get unhandled object from plugin");
                         return NFT_FAILURE;
                 }
         }
@@ -419,21 +426,22 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 /**
  * plugin setter - this will be called if core wants to set stuff
  */
-NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _set_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
         Niftylino *n = privdata;
-        
+
         /** decide about type of data (s. hardware.h) */
-        switch(o)
+        switch (o)
         {
                 case LED_HW_GAIN:
                 {
                         return _set_gain(n, data->gain.pos, data->gain.value);
                 }
-                        
+
                 case LED_HW_ID:
                 {
-                        NFT_LOG(L_DEBUG, "Setting \"%s\" ID: %s", 
+                        NFT_LOG(L_DEBUG, "Setting \"%s\" ID: %s",
                                 led_hardware_get_name(n->hw), data->id);
                         strncpy(n->id, data->id, sizeof(n->id));
                         return NFT_SUCCESS;
@@ -441,11 +449,11 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
 
                 case LED_HW_LEDCOUNT:
                 {
-                        NFT_LOG(L_DEBUG, "Setting \"%s\" to ledcount: %d", 
+                        NFT_LOG(L_DEBUG, "Setting \"%s\" to ledcount: %d",
                                 led_hardware_get_name(n->hw), data->ledcount);
                         if(!_set_ledcount(n, data->ledcount))
                                 return NFT_FAILURE;
-                        
+
                         n->ledcount = data->ledcount;
                         return NFT_SUCCESS;
                 }
@@ -455,7 +463,7 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                         return NFT_SUCCESS;
                 }
         }
-        
+
         return NFT_FAILURE;
 }
 
@@ -479,20 +487,20 @@ NftResult _show(void *privdata)
  * send data in chain to hardware (only use this if hardware doesn't show data right away
  * to avoid blanking)
  */
-NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
+NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
 {
 
         NFT_LOG(L_NOISY, "Sending %d LEDs (Offset: %d)", count, offset);
-        
+
         Niftylino *n = privdata;
 
         if(!n || !n->usb_handle)
                 NFT_LOG_NULL(NFT_FAILURE);
 
-        
+
         char *buffer = led_chain_get_buffer(c);
-        
-        if(usb_bulk_write(n->usb_handle, 1, buffer, 
+
+        if(usb_bulk_write(n->usb_handle, 1, buffer,
                           led_chain_get_buffer_size(c), n->usb_timeout) < 0)
         {
                 return NFT_FAILURE;
@@ -512,15 +520,14 @@ NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
 
 
 /** descriptor of hardware-plugin passed to the library */
-LedHardwarePlugin hardware_descriptor =
-{
+LedHardwarePlugin hardware_descriptor = {
         /** family name of the plugin (lib{family}-hardware.so) */
         .family = "niftylino",
-    	/** api major version */
+        /** api major version */
         .api_major = HW_PLUGIN_API_MAJOR_VERSION,
-    	/** api minor version */
+        /** api minor version */
         .api_minor = HW_PLUGIN_API_MINOR_VERSION,
-    	/** api micro version */
+        /** api micro version */
         .api_micro = HW_PLUGIN_API_MICRO_VERSION,
         /** plugin version major */
         .major_version = 0,

@@ -52,7 +52,7 @@
 int main(int argc, char *argv[])
 {
         nft_log_level_set(L_DEBUG);
-        
+
         /* try to initialize dummy hardware */
         LedHardware *a;
         if(!(a = led_hardware_new("nlo01", "dummy")))
@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
                 NFT_LOG(L_ERROR, "Failed to send gain");
                 return -1;
         }
-        
-        
-        led_hardware_deinit (a);
+
+
+        led_hardware_deinit(a);
         return 0;
 
 }

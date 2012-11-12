@@ -49,24 +49,24 @@
 typedef struct
 {
         /** usb-dev-handle of controller */
-        struct usb_dev_handle *usb_handle;
+        struct usb_dev_handle          *usb_handle;
         /** usb timeout */
-        unsigned int usb_timeout;
+        unsigned int                    usb_timeout;
         /** id of this adapter (with niftylino adapters it's the USB serial string) */
-        char id[1024];
+        char                            id[1024];
         /** hardware descriptor of this instance */
-        LedHardware *hw;
+        LedHardware                    *hw;
         /** current ledcount of this instance */
-        LedCount ledcount;
-}Niftylino;
+        LedCount                        ledcount;
+} Niftylino;
 
 
 /* available bits per led-brightness-value */
 typedef enum
 {
-    NIFTYLINO_8BIT_VALUES = 0,
-    NIFTYLINO_16BIT_VALUES,
-}NiftylinoValueWidth;
+        NIFTYLINO_8BIT_VALUES = 0,
+        NIFTYLINO_16BIT_VALUES,
+} NiftylinoValueWidth;
 
 
 /** niftylino USB device & product id */

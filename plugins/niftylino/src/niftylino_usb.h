@@ -49,21 +49,21 @@
 #define _NIFTYLINO_USB
 
 /** USB request types */
-enum USB_SETUP_BM_REQUEST_TYPE_BITS 
+enum USB_SETUP_BM_REQUEST_TYPE_BITS
 {
         RECV_DEVICE = 1,
         RECV_IFACE = 2,
         RECV_EP = 4,
         RECV_OTHER = 8,
-        TYPE_STANDARD = (0)<<5,
-        TYPE_CLASS = (1)<<5,
-        TYPE_VENDOR = (2)<<5,
-        DIR_HOST_TO_DEV = (0<<7),
-        DIR_DEV_TO_HOST = (1<<7),
+        TYPE_STANDARD = (0) << 5,
+        TYPE_CLASS = (1) << 5,
+        TYPE_VENDOR = (2) << 5,
+        DIR_HOST_TO_DEV = (0 << 7),
+        DIR_DEV_TO_HOST = (1 << 7),
 };
 
 /** niftylino command IDs */
-enum NIFTY_CTRL_MSG_ID 
+enum NIFTY_CTRL_MSG_ID
 {
         NIFTY_LATCH = 10,
         NIFTY_SET_CHAINLENGTH,

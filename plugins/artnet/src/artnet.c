@@ -48,16 +48,16 @@
 /** private info of our "hardware" */
 struct priv
 {
-	/* our LedHardware instance */
+        /* our LedHardware instance */
         LedHardware *hw;
-	/* our artnet node instance */
-	artnet_node *node;
-	/* artnet address */
+        /* our artnet node instance */
+        artnet_node *node;
+        /* artnet address */
         char address[1024];
-	/* artnet port */
-	int port;
-	/* amount of LEDs controlled by this plugin */
-	LedCount leds;
+        /* artnet port */
+        int port;
+        /* amount of LEDs controlled by this plugin */
+        LedCount leds;
 };
 
 
@@ -67,37 +67,39 @@ struct priv
 /**
  * called upon plugin load
  */
-static NftResult _init(void **privdata, LedHardware *h)
+static NftResult _init(void **privdata, LedHardware * h)
 {
         NFT_LOG(L_INFO, "Initializing plugin...");
 
-	
+
         /* allocate private structure */
         struct priv *p;
-        if(!(p = calloc(1,sizeof(struct priv))))
+        if(!(p = calloc(1, sizeof(struct priv))))
         {
                 NFT_LOG_PERROR("calloc");
                 return NFT_FAILURE;
         }
 
-	
+
         /* register our config-structure */
         *privdata = p;
-        
+
         /* save our hardware descriptor */
         p->hw = h;
 
-	
 
 
-	
-	//~ /* register dynamic property for artnet address */
-    	//~ if(!led_hardware_plugin_prop_register(h, "address", LED_HW_CUSTOM_PROP_STRING))
-                //~ return NFT_FAILURE;
-	//~ /* register dynamic property for artnet port / universe */
-        //~ if(!led_hardware_plugin_prop_register(h, "port", LED_HW_CUSTOM_PROP_INT))
-                //~ return NFT_FAILURE;
-	        
+
+
+        // ~ /* register dynamic property for artnet address */
+        // ~ if(!led_hardware_plugin_prop_register(h, "address",
+        // LED_HW_CUSTOM_PROP_STRING))
+        // ~ return NFT_FAILURE;
+        // ~ /* register dynamic property for artnet port / universe */
+        // ~ if(!led_hardware_plugin_prop_register(h, "port",
+        // LED_HW_CUSTOM_PROP_INT))
+        // ~ return NFT_FAILURE;
+
         return NFT_SUCCESS;
 }
 
@@ -107,13 +109,13 @@ static NftResult _init(void **privdata, LedHardware *h)
  */
 static void _deinit(void *privdata)
 {
-        NFT_LOG(L_INFO, "Deinitializing plugin...");   
+        NFT_LOG(L_INFO, "Deinitializing plugin...");
 
-        //struct priv *p = privdata;
-        
+        // struct priv *p = privdata;
+
         /* unregister dynamic properties */
-        //~ led_hardware_plugin_prop_unregister(p->hw, "address");
-        //~ led_hardware_plugin_prop_unregister(p->hw, "port");
+        // ~ led_hardware_plugin_prop_unregister(p->hw, "address");
+        // ~ led_hardware_plugin_prop_unregister(p->hw, "port");
 
         /** free structure we allocated in _init() */
         free(privdata);
@@ -128,15 +130,15 @@ static NftResult _hw_init(void *privdata, const char *id)
 {
         NFT_LOG(L_DEBUG, "Initializing dummy hardware");
 
-        //~ struct priv *p = privdata;
+        // ~ struct priv *p = privdata;
 
-        //~ /* ... do checks ... */
-        
+        // ~ /* ... do checks ... */
 
-                
-        //~ /* copy our id (and/or change it; check for "*" wildcard) */
-        //~ strncpy(p->id, id, sizeof(p->id));
-        
+
+
+        // ~ /* copy our id (and/or change it; check for "*" wildcard) */
+        // ~ strncpy(p->id, id, sizeof(p->id));
+
         return NFT_SUCCESS;
 }
 
@@ -154,75 +156,79 @@ static void _hw_deinit(void *privdata)
  * plugin getter - this will be called if core wants to get stuff from the plugin
  * @note you don't need to implement a getter for every single LedPluginParam
  */
-NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _get_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
-        //~ struct priv *p = privdata;
-        
-        //~ /** decide about object to give back to the core (s. hardware.h) */
-        //~ switch(o)
-        //~ {
-                //~ case LED_HW_ID:
-                //~ {
-		    	//~ NFT_LOG(L_INFO, "Getting id of dummy hardware (%s)",
-			            //~ p->id);
-		    
-                        //~ data->id = p->id;
-		    
-                        //~ return NFT_SUCCESS;
-                //~ }
+        // ~ struct priv *p = privdata;
 
-                //~ case LED_HW_LEDCOUNT:
-                //~ {
-		    	//~ NFT_LOG(L_INFO, "Getting dummy hardware ledcount (%d LEDs)",
-			            //~ data->ledcount);
-		    
-                        //~ data->ledcount = p->ledcount;
-		    		    
-                        //~ return NFT_SUCCESS;
-                //~ }
+        // ~ /** decide about object to give back to the core (s. hardware.h)
+        // */
+        // ~ switch(o)
+        // ~ {
+        // ~ case LED_HW_ID:
+        // ~ {
+        // ~ NFT_LOG(L_INFO, "Getting id of dummy hardware (%s)",
+        // ~ p->id);
 
-		//~ case LED_HW_GAIN:
-	    	//~ {
-			//~ NFT_LOG(L_INFO, "Getting gain of LED %d (0)",
-			        //~ data->gain.pos);
-			
-			//~ data->gain.value = 0;
-						
-			//~ return NFT_SUCCESS;
-		//~ }
+        // ~ data->id = p->id;
 
-                //~ /* handle dynamic custom properties - 
-                   //~ we have to fill in data->custom.value.[s|i|f] and
-                   //~ data->custom.valuesize */
-                //~ case LED_HW_CUSTOM_PROP:
-                //~ {
-                        //~ /** foo? */
-                        //~ if(strcmp(data->custom.name, "foo") == 0)
-                        //~ {
-                                //~ data->custom.value.s = p->foo;
-                                //~ data->custom.valuesize = sizeof(p->foo);
-                                
-                                //~ return NFT_SUCCESS;
-                        //~ }
-                        //~ else if(strcmp(data->custom.name, "bar") == 0)
-                        //~ {
-                                //~ data->custom.value.i = p->bar;
-                                //~ data->custom.valuesize = sizeof(p->bar);
-                        //~ }
-                        //~ else
-                        //~ {
-                                //~ NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
-                                //~ return NFT_FAILURE;
-                        //~ }
-                //~ }
-                        
-                //~ default:
-                //~ {
-                        //~ NFT_LOG(L_ERROR, "Request to get unhandled object \"%d\" from plugin",
-                                        //~ o);
-                        //~ return NFT_FAILURE;
-                //~ }
-        //~ }
+        // ~ return NFT_SUCCESS;
+        // ~ }
+
+        // ~ case LED_HW_LEDCOUNT:
+        // ~ {
+        // ~ NFT_LOG(L_INFO, "Getting dummy hardware ledcount (%d LEDs)",
+        // ~ data->ledcount);
+
+        // ~ data->ledcount = p->ledcount;
+
+        // ~ return NFT_SUCCESS;
+        // ~ }
+
+        // ~ case LED_HW_GAIN:
+        // ~ {
+        // ~ NFT_LOG(L_INFO, "Getting gain of LED %d (0)",
+        // ~ data->gain.pos);
+
+        // ~ data->gain.value = 0;
+
+        // ~ return NFT_SUCCESS;
+        // ~ }
+
+        // ~ /* handle dynamic custom properties - 
+        // ~ we have to fill in data->custom.value.[s|i|f] and
+        // ~ data->custom.valuesize */
+        // ~ case LED_HW_CUSTOM_PROP:
+        // ~ {
+        // ~ /** foo? */
+        // ~ if(strcmp(data->custom.name, "foo") == 0)
+        // ~ {
+        // ~ data->custom.value.s = p->foo;
+        // ~ data->custom.valuesize = sizeof(p->foo);
+
+        // ~ return NFT_SUCCESS;
+        // ~ }
+        // ~ else if(strcmp(data->custom.name, "bar") == 0)
+        // ~ {
+        // ~ data->custom.value.i = p->bar;
+        // ~ data->custom.valuesize = sizeof(p->bar);
+        // ~ }
+        // ~ else
+        // ~ {
+        // ~ NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"",
+        // data->custom.name);
+        // ~ return NFT_FAILURE;
+        // ~ }
+        // ~ }
+
+        // ~ default:
+        // ~ {
+        // ~ NFT_LOG(L_ERROR, "Request to get unhandled object \"%d\" from
+        // plugin",
+        // ~ o);
+        // ~ return NFT_FAILURE;
+        // ~ }
+        // ~ }
 
         return NFT_FAILURE;
 }
@@ -232,12 +238,13 @@ NftResult _get_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
  * plugin setter - this will be called if core wants to set stuff
  * @note you don't need to implement a setter for every LedPluginParam
  */
-NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *data)
+NftResult _set_handler(void *privdata, LedPluginParam o,
+                       LedPluginParamData * data)
 {
         struct priv *p = privdata;
-        
+
         /** decide about type of data (s. hardware.h) */
-        switch(o)
+        switch (o)
         {
                 case LED_HW_ID:
                 {
@@ -251,51 +258,56 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
                         return NFT_SUCCESS;
                 }
 
-                 /* handle dynamic custom properties - 
-                   we can read out data->custom.value.[s|i|f] and
-                   data->custom.valuesize */
+                        /* handle dynamic custom properties - we can read out
+                         * data->custom.value.[s|i|f] and
+                         * data->custom.valuesize */
                 case LED_HW_CUSTOM_PROP:
                 {
-                        //~ /** address? */
-                        //~ if(strcmp(data->custom.name, "foo") == 0)
-                        //~ {
-                                //~ /* check valuesize */
-                                //~ if(data->custom.valuesize > sizeof(p->foo))
-                                //~ {
-                                        //~ NFT_LOG(L_WARNING, "value of \"foo\" truncated. Continuing.");
-                                //~ }
+                        // ~ /** address? */
+                        // ~ if(strcmp(data->custom.name, "foo") == 0)
+                        // ~ {
+                        // ~ /* check valuesize */
+                        // ~ if(data->custom.valuesize > sizeof(p->foo))
+                        // ~ {
+                        // ~ NFT_LOG(L_WARNING, "value of \"foo\" truncated.
+                        // Continuing.");
+                        // ~ }
 
-                                //~ /* do some sanity checks. Return NFT_FAILURE if they fail */
-                                //~ /* ... */
-                                
-                                //~ /* copy new string to our buffer */
-                                //~ strncpy(p->foo, data->custom.value.s, sizeof(p->foo)-1);
-                                //~ p->foo[sizeof(p->foo)-1] = '\0';
+                        // ~ /* do some sanity checks. Return NFT_FAILURE if
+                        // they fail */
+                        // ~ /* ... */
 
-                                //~ NFT_LOG(L_INFO, "Set \"foo\" to \"%s\"", p->foo);
-                                
-                                //~ return NFT_SUCCESS;
-                        //~ }
-                        //~ else if(strcmp(data->custom.name, "bar") == 0)
-                        //~ {
-                                //~ /* set new value */
-                                //~ p->bar = data->custom.value.i;
+                        // ~ /* copy new string to our buffer */
+                        // ~ strncpy(p->foo, data->custom.value.s,
+                        // sizeof(p->foo)-1);
+                        // ~ p->foo[sizeof(p->foo)-1] = '\0';
 
-                                //~ NFT_LOG(L_INFO, "Set \"bar\" to %d", p->bar);
-                        //~ }
-                        //~ else
+                        // ~ NFT_LOG(L_INFO, "Set \"foo\" to \"%s\"", p->foo);
+
+                        // ~ return NFT_SUCCESS;
+                        // ~ }
+                        // ~ else if(strcmp(data->custom.name, "bar") == 0)
+                        // ~ {
+                        // ~ /* set new value */
+                        // ~ p->bar = data->custom.value.i;
+
+                        // ~ NFT_LOG(L_INFO, "Set \"bar\" to %d", p->bar);
+                        // ~ }
+                        // ~ else
                         {
-                                NFT_LOG(L_ERROR, "Unhandled custom property \"%s\"", data->custom.name);
+                                NFT_LOG(L_ERROR,
+                                        "Unhandled custom property \"%s\"",
+                                        data->custom.name);
                                 return NFT_FAILURE;
                         }
                 }
-                        
+
                 default:
                 {
                         return NFT_SUCCESS;
                 }
         }
-        
+
         return NFT_FAILURE;
 }
 
@@ -305,49 +317,50 @@ NftResult _set_handler(void *privdata, LedPluginParam o, LedPluginParamData *dat
  * data is received to avoid blanking. If the data is shown immediately, you have
  * to transmit it in _show() 
  */
-NftResult _send(void *privdata, LedChain *c, LedCount count, LedCount offset)
+NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
 {
-        NFT_LOG(L_VERBOSE, "Sending dummy data");       
+        NFT_LOG(L_VERBOSE, "Sending dummy data");
 
-        //~ /* do nothing if no greyscale-values are not printed */
-        //~ if(nft_log_level_get() > L_DEBUG)
-                //~ return NFT_SUCCESS;
+        // ~ /* do nothing if no greyscale-values are not printed */
+        // ~ if(nft_log_level_get() > L_DEBUG)
+        // ~ return NFT_SUCCESS;
 
-        //~ /* print all greyscale-values */
-        //~ NFT_LOG(L_DEBUG, "Greyscale-Buffer:");
+        // ~ /* print all greyscale-values */
+        // ~ NFT_LOG(L_DEBUG, "Greyscale-Buffer:");
 
-        //~ char *buffer = led_chain_get_buffer(c);
-        //~ int i,a ;
-        //~ size_t pos;
-        //~ static char string[512];
-        //~ char *b = buffer;
-        
-        //~ for(a=offset; a<count/10; a++)
-        //~ {
-                //~ char *tmp = string;
-                //~ size_t size = sizeof(string);
-                
-                //~ for(i=0; i<10; i++)
-                //~ {
-                        //~ //if(tmp >= string+count)
-                                //~ //return NFT_SUCCESS;
+        // ~ char *buffer = led_chain_get_buffer(c);
+        // ~ int i,a ;
+        // ~ size_t pos;
+        // ~ static char string[512];
+        // ~ char *b = buffer;
 
-                        //~ if((pos = snprintf(tmp, size, "0x%.2hhx ",*b++)) < 0)
-                        //~ {
-                                //~ NFT_LOG_PERROR("snprintf()");
-                                //~ return NFT_FAILURE;
-                        //~ }
+        // ~ for(a=offset; a<count/10; a++)
+        // ~ {
+        // ~ char *tmp = string;
+        // ~ size_t size = sizeof(string);
 
-                        //~ tmp += pos;
-                        //~ size -= pos;
-                //~ }
+        // ~ for(i=0; i<10; i++)
+        // ~ {
+        // ~ //if(tmp >= string+count)
+        // ~ //return NFT_SUCCESS;
 
-                //~ NFT_LOG(L_DEBUG, "%s", string);
-        //~ }
+        // ~ if((pos = snprintf(tmp, size, "0x%.2hhx ",*b++)) < 0)
+        // ~ {
+        // ~ NFT_LOG_PERROR("snprintf()");
+        // ~ return NFT_FAILURE;
+        // ~ }
 
-        //~ /* send chainbuffer to hardware */
-        //~ NFT_LOG(L_DEBUG, "Sent %d LED values to dummy hardware", led_chain_get_ledcount(c));
-        
+        // ~ tmp += pos;
+        // ~ size -= pos;
+        // ~ }
+
+        // ~ NFT_LOG(L_DEBUG, "%s", string);
+        // ~ }
+
+        // ~ /* send chainbuffer to hardware */
+        // ~ NFT_LOG(L_DEBUG, "Sent %d LED values to dummy hardware",
+        // led_chain_get_ledcount(c));
+
         return NFT_SUCCESS;
 }
 
@@ -371,15 +384,14 @@ NftResult _show(void *privdata)
 
 
 /** descriptor of hardware-plugin passed to the library */
-LedHardwarePlugin hardware_descriptor =
-{
+LedHardwarePlugin hardware_descriptor = {
         /** family name of the plugin (lib{family}-hardware.so) */
         .family = "artnet",
-	/** api major version */
+        /** api major version */
         .api_major = HW_PLUGIN_API_MAJOR_VERSION,
-    	/** api minor version */
+        /** api minor version */
         .api_minor = HW_PLUGIN_API_MINOR_VERSION,
-    	/** api micro version */
+        /** api micro version */
         .api_micro = HW_PLUGIN_API_MICRO_VERSION,
         /** plugin version major */
         .major_version = 0,
