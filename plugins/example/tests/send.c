@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
         /* initialize any hardware that can be found (id="*"), define 16
          * connected LEDs, pixeldata should be provided as unsigned 8bit values 
-         * in greyscale format */
+         * * in greyscale format */
         if(!led_hardware_init(h, "*", 16, "Y u8"))
         {
                 NFT_LOG(L_ERROR, "failed to initialize hardware");

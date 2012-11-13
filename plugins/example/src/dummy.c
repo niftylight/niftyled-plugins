@@ -161,7 +161,7 @@ static NftResult _hw_init(void *privdata, const char *id)
                                            (led_hardware_get_chain(p->hw)));
         NFT_LOG(L_DEBUG, "Using \"%s\" as pixel-format", fmtstring);
 
-        /* dummy should support any format but in theory, you could check like 
+        /* dummy should support any format but in theory, you could check like
          * this ... */
         // if(strcmp(fmtstring, "RGB u8") != 0)
         // return NFT_FAILURE;
