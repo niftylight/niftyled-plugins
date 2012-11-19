@@ -551,7 +551,7 @@ NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
         memset(packed, 0, sizeof(packed));
 
         /* convert to 8bpp to 1bpp */
-        unsigned int i;
+        LedCount i;
         for(i = 0; i < p->ledcount; i++)
         {
                 packed[i / 8] = packed[i / 8] << 1;
