@@ -540,7 +540,7 @@ LedHardwarePlugin hardware_descriptor = {
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2006-201",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2006-2012",
         .description = "Hardware plugin for niftylino LED-Controllers",
         .url = PACKAGE_URL,
         .id_example = "\"112441352785892847210780677\" or \"*\"",
