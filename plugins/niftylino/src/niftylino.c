@@ -130,7 +130,7 @@ static NftResult _set_ledcount(Niftylino * n, LedCount ledcount)
                                  sizeof(_Chainlength));
 }
 
-/** set width of brightness-values */
+/** set width of greyscale-values */
 static NftResult _set_format(void *privdata, NiftylinoValueWidth w)
 {
         Niftylino *n = privdata;
@@ -351,13 +351,17 @@ static NftResult _usb_init(void *privdata, const char *id)
                                 n->usb_handle = h;
 
                                 /* set format */
-                                NFT_LOG(L_DEBUG, "Setting bitwidth to %d bit",
+                                NFT_LOG(L_INFO, "Setting bitwidth to %d bit",
                                         (vw ==
                                          NIFTYLINO_8BIT_VALUES ? 8 : 16));
 
                                 if(!_set_format(privdata, vw))
+								{
+										NFT_LOG(L_ERROR, "Failed to set greyscale format to %s.",
+										        	vw == NIFTYLINO_8BIT_VALUES ? "u8" : "u16");
                                         return NFT_FAILURE;
-
+								}
+								
                                 return NFT_SUCCESS;
                         }
 
