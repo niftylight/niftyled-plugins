@@ -134,7 +134,7 @@ AC_ARG_ENABLE(
 	AS_HELP_STRING([--enable-plugin-arduino-72xx], [Build arduino-72xx plugin]),
 	[ if test x$enableval = xno ; then NL_WANT_PLUGIN_ARDUINO_72XX=false ; else NL_WANT_PLUGIN_ARDUINO_72XX=true ; fi ],
 	[NL_WANT_PLUGIN_ARDUINO_72XX=true])
-AM_CONDITIONAL(NL_PLUGIN_ARDUINO_72XX, test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue)
+AM_CONDITIONAL(NL_PLUGIN_ARDUINO_72XX, test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue && test $HAVE_USB -eq 1)
 
 # niftylino plugin argument
 AC_ARG_ENABLE(
@@ -148,7 +148,7 @@ AM_CONDITIONAL([NL_PLUGIN_NIFTYLINO], test x$NL_WANT_PLUGIN_NIFTYLINO = xtrue &&
 AC_ARG_ENABLE(
 	plugin-artnet,
 	AS_HELP_STRING([--enable-plugin-artnet], [Build libartnet plugin]),
-	[ if test x$enableval = xno ; then NL_WANT_PLUGIN_ARTNET=false ; else if test $HAVE_USB -eq 1 ; then NL_WANT_PLUGIN_ARTNET=true ; else AC_MSG_ERROR([Build of artnet plugin requested but libartnet headers not found.]) ; fi ; fi ],
+	[ if test x$enableval = xno ; then NL_WANT_PLUGIN_ARTNET=false ; else if test $HAVE_ARTNET -eq 1 ; then NL_WANT_PLUGIN_ARTNET=true ; else AC_MSG_ERROR([Build of artnet plugin requested but libartnet headers not found.]) ; fi ; fi ],
 	[NL_WANT_PLUGIN_ARTNET=true])
 AM_CONDITIONAL(NL_PLUGIN_ARTNET, test x$NL_WANT_PLUGIN_ARTNET = xtrue && test $HAVE_ARTNET -eq 1)
 
@@ -158,7 +158,7 @@ AM_CONDITIONAL(NL_PLUGIN_ARTNET, test x$NL_WANT_PLUGIN_ARTNET = xtrue && test $H
 # Build string with plugins to build
 # --------------------------------
 if test "x$NL_WANT_PLUGIN_DUMMY" = "xtrue" ; then BUILD_PLUGINS="dummy $BUILD_PLUGINS" ; fi
-if test "x$NL_WANT_PLUGIN_ARDUINO_72XX" = "xtrue" ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
+if test "x$NL_WANT_PLUGIN_ARDUINO_72XX" = "xtrue" && test $HAVE_USB -eq 1 ; then BUILD_PLUGINS="arduino-max72xx $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_NIFTYLINO" = "xtrue" && test $HAVE_USB -eq 1 ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_ARTNET" = "xtrue" && test $HAVE_ARTNET -eq 1 ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_LPD8806_SPI" = "xtrue" ; then BUILD_PLUGINS="LPD8806-SPI $BUILD_PLUGINS" ; fi
