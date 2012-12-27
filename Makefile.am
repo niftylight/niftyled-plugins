@@ -41,6 +41,7 @@ indent:
 
 
 # create .deb package
+# needs dpkg-dev, debhelper
 DEBTMPDIR = deb-tmp
 DEBSRCDIR = $(DEBTMPDIR)/$(PACKAGE_NAME)-$(VERSION)-$(PACKAGE_MAJOR_VERSION)
 deb: dist-gzip
