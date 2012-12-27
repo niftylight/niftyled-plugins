@@ -11,7 +11,7 @@ Homepage: @PACKAGE_URL@
 Package: @PACKAGE_NAME@-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@ (= ${binary:Version}), libniftyprefs-dev, libniftyled-dev
+Depends: ${misc:Depends}, @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@ (= ${binary:Version}), libniftyprefs-dev, libniftyled-dev, libusb-dev
 Description: @PACKAGE_NAME@ library headers
  This package contains development headers for @PACKAGE_NAME@ -
  @PACKAGE_DESCRIPTION_LONG@
@@ -19,6 +19,6 @@ Description: @PACKAGE_NAME@ library headers
 Package: @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libniftyprefs0 (>= 0.1.0), libniftyled0 (>= 0.1.1), libniftylog1 (>= 0.1.2)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libniftyprefs1 (>= 0.1.0), libniftyled1 (>= 0.1.1), libniftylog1 (>= 0.1.2), libusb-0.1-4
 Description: @PACKAGE_DESCRIPTION@
  @PACKAGE_DESCRIPTION_LONG@
