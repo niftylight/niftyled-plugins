@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 {
         nft_log_level_set(L_DEBUG);
 
-        /* initialize new dummy hardware called "nlo01" */
+        /* register new dummy hardware called "nlo01" */
         LedHardware *h;
         if(!(h = led_hardware_new("nlo01", "dummy")))
         {
@@ -62,15 +62,37 @@ int main(int argc, char *argv[])
                 return -1;
         }
 
-        /* initialize any hardware that can be found (id="*"), define 16
-         * connected LEDs, pixeldata should be provided as unsigned 8bit values 
-         * * in greyscale format */
-        if(!led_hardware_init(h, "*", 16, "Y u8"))
+        /* initialize any hardware that can be found (id="*"), define 12
+         * connected LEDs (4 BGR pixels). Greyscale data should be provided in
+         * unsigned 8-bit format 
+		 */
+        if(!led_hardware_init(h, "*", 12, "BGR u8"))
         {
                 NFT_LOG(L_ERROR, "failed to initialize hardware");
                 return -1;
         }
 
+
+		/**********************************************************************
+		 * niftyled basically provides 2 ways to send data to LED hardware:
+		 * 
+		 * 1.  set "raw" greyscale value of a LED in a chain connected to a
+		 *     correctly initialized LED hardware
+		 * 
+		 * 1.1 use the API to set each greyscale value
+		 * 
+		 * 1.2 directly write to the RAW buffer
+		 *
+		 *
+		 * 2. send a complete pixelframe and have niftyled translate that to 
+		 *    mapped LEDs connected to one or more LED hardware devices 
+		 *    according to the current setup configuration (where each LED
+		 *    has been assigned a X/Y coordinate and a "Component" that refers 
+		 *    to a component of a pixel at this position in the pixelframe)
+		 */
+
+		
+		/****** METHOD 1.1 *******/
         /* get chain of this hardware */
         LedChain *c = led_hardware_get_chain(h);
 
@@ -89,6 +111,7 @@ int main(int argc, char *argv[])
 
 
 
+		/****** METHOD 1.2 *******/
         /* ...or access raw pixelbuffer */
         uint8_t *pixels = led_chain_get_buffer(c);
 
@@ -104,7 +127,9 @@ int main(int argc, char *argv[])
         led_hardware_show(h);
 
 
+		/****** METHOD 2 - s. ledcat sources *******/
 
+		
         /* deinitialize hardware */
         led_hardware_deinit(h);
 

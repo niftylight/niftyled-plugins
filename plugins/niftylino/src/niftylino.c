@@ -496,6 +496,7 @@ NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
 
         NFT_LOG(L_NOISY, "Sending %d LEDs (Offset: %d)", count, offset);
 
+		
         Niftylino *n = privdata;
 
         if(!n || !n->usb_handle)
