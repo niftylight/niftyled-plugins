@@ -1,5 +1,6 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Header: $
 
 EAPI=4
 
@@ -19,13 +20,11 @@ IUSE="debug lpd8806-spi niftylino arduino usb"
 
 RDEPEND="media-gfx/niftyled"
 
-DEPEND="${RDEPEND} 
+DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 REQUIRED_USE="
 	niftylino? ( usb )"
-
-
 
 src_prepare()
 {
@@ -37,7 +36,7 @@ src_unpack()
 	git-2_src_unpack
 }
 
-src_configure() 
+src_configure()
 {
 	econf \
                 $(use_enable debug) \
@@ -46,8 +45,9 @@ src_configure()
                 $(use_enable lpd8806-spi plugin-lpd8806-spi)
 }
 
-src_install() {
-    emake DESTDIR="${D}" install || die
+src_install() 
+{
+	emake DESTDIR="${D}" install || die
 
-    dodoc NEWS README COPYING AUTHORS ChangeLog
+	dodoc NEWS README AUTHORS ChangeLog
 }
