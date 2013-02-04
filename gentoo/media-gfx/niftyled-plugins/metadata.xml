@@ -3,8 +3,15 @@
 <pkgmetadata>
 <herd>niftylight</herd>
 <maintainer>
+  <name>Daniel Hiepler</name>
   <email>daniel-gentoo@niftylight.de</email>
 </maintainer>
+<upstream>
+  <remote-id type="github">niftylight/niftyled-plugins</remote-id>
+  <doc>http://wiki.niftylight.de/Category:Libniftyled_hardware-plugins</doc>
+  <changelog>http://github.com/niftylight/niftyled-plugins/commits/master</changelog>
+  <bugs-to>http://github.com/niftylight/niftyled-plugins/issues</bugs-to>
+</upstream>
 <use>
   <flag name='debug'>Compile for debugging (don't forget to modify CFLAGS and FEATURES)</flag>
   <flag name='usb'>Enable support for USB based hardware</flag>
@@ -12,5 +19,4 @@
   <flag name='arduino'>Enable support for arduino based LED controllers</flag>
   <flag name='lpd8806-spi'>Enable support for LDP8806 LED drivers connected to SPI port</flag>
 </use>
-<bugs-to>http://github.com/niftylight/niftyled-plugins/issues</bugs-to>
 </pkgmetadata>
