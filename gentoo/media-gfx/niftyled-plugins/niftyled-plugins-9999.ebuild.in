@@ -45,7 +45,7 @@ src_configure()
                 $(use_enable lpd8806-spi plugin-lpd8806-spi)
 }
 
-src_install() 
+src_install()
 {
 	emake DESTDIR="${D}" install || die
 
