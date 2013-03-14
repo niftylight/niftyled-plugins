@@ -64,8 +64,7 @@ int main(int argc, char *argv[])
 
         /* initialize any hardware that can be found (id="*"), define 12
          * connected LEDs (4 BGR pixels). Greyscale data should be provided in
-         * unsigned 8-bit format 
-		 */
+         * unsigned 8-bit format */
         if(!led_hardware_init(h, "*", 12, "BGR u8"))
         {
                 NFT_LOG(L_ERROR, "failed to initialize hardware");
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
         }
 
 
-		/**********************************************************************
+                /**********************************************************************
 		 * niftyled basically provides 2 ways to send data to LED hardware:
 		 * 
 		 * 1.  set "raw" greyscale value of a LED in a chain connected to a
@@ -91,8 +90,8 @@ int main(int argc, char *argv[])
 		 *    to a component of a pixel at this position in the pixelframe)
 		 */
 
-		
-		/****** METHOD 1.1 *******/
+
+                /****** METHOD 1.1 *******/
         /* get chain of this hardware */
         LedChain *c = led_hardware_get_chain(h);
 
@@ -111,7 +110,7 @@ int main(int argc, char *argv[])
 
 
 
-		/****** METHOD 1.2 *******/
+                /****** METHOD 1.2 *******/
         /* ...or access raw pixelbuffer */
         uint8_t *pixels = led_chain_get_buffer(c);
 
@@ -127,9 +126,9 @@ int main(int argc, char *argv[])
         led_hardware_show(h);
 
 
-		/****** METHOD 2 - s. ledcat sources *******/
+                /****** METHOD 2 - s. ledcat sources *******/
 
-		
+
         /* deinitialize hardware */
         led_hardware_deinit(h);
 

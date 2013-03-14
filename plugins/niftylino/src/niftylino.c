@@ -356,12 +356,15 @@ static NftResult _usb_init(void *privdata, const char *id)
                                          NIFTYLINO_8BIT_VALUES ? 8 : 16));
 
                                 if(!_set_format(privdata, vw))
-								{
-										NFT_LOG(L_ERROR, "Failed to set greyscale format to %s.",
-										        	vw == NIFTYLINO_8BIT_VALUES ? "u8" : "u16");
+                                {
+                                        NFT_LOG(L_ERROR,
+                                                "Failed to set greyscale format to %s.",
+                                                vw ==
+                                                NIFTYLINO_8BIT_VALUES ? "u8" :
+                                                "u16");
                                         return NFT_FAILURE;
-								}
-								
+                                }
+
                                 return NFT_SUCCESS;
                         }
 
@@ -496,7 +499,7 @@ NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
 
         NFT_LOG(L_NOISY, "Sending %d LEDs (Offset: %d)", count, offset);
 
-		
+
         Niftylino *n = privdata;
 
         if(!n || !n->usb_handle)

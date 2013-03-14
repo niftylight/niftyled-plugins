@@ -440,12 +440,14 @@ NftResult _set_handler(void *privdata, LedPluginParam o,
                         }
 
                         /* ledcount must be a multiple of 8 */
-                        /* if(data->ledcount % 8 != 0) { p->ledcount =
-                         * (data->ledcount/8+1)*8; NFT_LOG(L_WARNING, "Ledcount 
-                         * * (%d) is no multiple of 8, using %d.",
-                         * data->ledcount, p->ledcount); } else { */
+                        // if(data->ledcount % 8 != 0) { p->ledcount =
+                        // (data->ledcount/8+1)*8; NFT_LOG(L_WARNING, "Ledcount 
+                        // 
+                        // 
+                        // (%d) is no multiple of 8, using %d.",
+                        // data->ledcount, p->ledcount); } else { 
                         p->ledcount = data->ledcount;
-                        /* } */
+                        // }
 
                         /* set chipcount at arduino */
                         char chipcount =
