@@ -1,6 +1,6 @@
 #############
 # libniftyled plugins configure.ac
-# v0.5 - (c) Daniel Hiepler (2010-2012)
+# v0.5 - (c) Daniel Hiepler (2010-2013)
 
 
 # --------------------------------

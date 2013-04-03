@@ -617,7 +617,7 @@ LedHardwarePlugin hardware_descriptor = {
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2012",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2013",
         .description =
                 "Plugin to control MAX7219/MAX7221 and compatible connected to an arduino through a virtual serial port",
         .url = PACKAGE_URL,

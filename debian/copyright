@@ -3,7 +3,7 @@ Upstream-Name: niftyled-plugins
 Source: http://github.com/niftylight/niftyled-plugins
 
 Files: *
-Copyright: 2006-2012 Daniel Hiepler <daniel@niftylight.de>
+Copyright: 2006-2013 Daniel Hiepler <daniel@niftylight.de>
 License: GPL-3.0+
 
 Files: debian/*

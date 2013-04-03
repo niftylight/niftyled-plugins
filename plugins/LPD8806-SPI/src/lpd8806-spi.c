@@ -509,7 +509,7 @@ LedHardwarePlugin hardware_descriptor = {
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2012",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2013",
         .description =
                 "Plugin to control LDP8806 and compatible connected to SPI port",
         .url = PACKAGE_URL,
