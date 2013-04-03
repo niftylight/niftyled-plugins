@@ -45,15 +45,15 @@ AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version --git]), [git version])
 #    libtool stuff
 # -----------------------------------------------
 LT_INIT
-AM_PROG_LIBTOOL
 AC_LIBTOOL_WIN32_DLL
+AM_PROG_LIBTOOL
 
 
 # -----------------------------------------------
 # Checks for programs.
 # -----------------------------------------------
 PKG_PROG_PKG_CONFIG([0.14])
-if test -z "${PKG_CONFIG}"; then
+if test -z "${PKG_CONFIG}" ; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
 fi
 
@@ -83,6 +83,7 @@ AC_SUBST(artnet_LIBS)
 # --------------------------------
 # Check for headers
 # --------------------------------
+AC_HEADER_STDC
 
 
 # --------------------------------
@@ -113,6 +114,7 @@ AC_SUBST(artnet_LIBS)
 # --------------------------------
 #   compile process
 # --------------------------------
+AC_PROG_CC_C99
 AM_PROG_CC_C_O
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
@@ -245,11 +247,11 @@ Configure report:
 
 \tInstall prefix..............:  ${prefix}
 \tC compiler..................:  ${CC}
-\tC++ compiler................:  ${CPP}
 \tSystem CFLAGS...............:  ${CFLAGS}
 \tSystem CXXFLAGS.............:  ${CXXFLAGS}
 \tSystem LDFLAGS..............:  ${LDFLAGS}
 
-\tBuilding plugins............:  ${BUILD_PLUGINS}
 \tudev support................:  ${UDEV_REPORT}
+
+\tBuilding plugins............:  ${BUILD_PLUGINS}
 "
