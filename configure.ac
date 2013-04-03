@@ -1,21 +1,28 @@
+#############
 # libniftyled plugins configure.ac
-# v0.4 - (c) Daniel Hiepler (2010-2012)
+# v0.5 - (c) Daniel Hiepler (2010-2012)
 
 
 # --------------------------------
 #    initialization
 # --------------------------------
 
+# package info
 AC_INIT([niftyled-plugins], m4_esyscmd([./version --short]), [http://github.com/niftylight/niftyled-plugins/issues], [niftyled-plugins], http://wiki.niftylight.de/Hardware-plugins)
-AC_COPYRIGHT([Copyright (C) 2006-2012 Daniel Hiepler])
+AC_COPYRIGHT([Copyright (C) 2006-2013 Daniel Hiepler])
+
+# for cross compiling
 AC_CANONICAL_SYSTEM
+
+# autotools initialization
+AC_LANG(C)
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wno-portability -Wall])
 
 
 
 # --------------------------------
-#    information on the package
+#    further info on the package
 # --------------------------------
 
 # infos
@@ -34,14 +41,17 @@ AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version --micro]), [micro versio
 AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version --git]), [git version])
 
 
+# -----------------------------------------------
+#    libtool stuff
+# -----------------------------------------------
+LT_INIT
+AM_PROG_LIBTOOL
+AC_LIBTOOL_WIN32_DLL
+
 
 # -----------------------------------------------
 # Checks for programs.
 # -----------------------------------------------
-LT_INIT
-AC_PROG_CC_STDC
-AM_PROG_CC_C_O
-AM_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG([0.14])
 if test -z "${PKG_CONFIG}"; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
@@ -51,6 +61,10 @@ fi
 # --------------------------------
 #    checks for libraries
 # --------------------------------
+
+PKG_CHECK_VAR(udevdir, [udev], [udevdir], [HAVE_UDEV=1], [HAVE_UDEV=0])
+AC_SUBST(HAVE_UDEV)
+
 PKG_CHECK_MODULES(niftyled, [niftyled], [], [AC_MSG_ERROR([You need libniftyled + development headers installed])])
 AC_SUBST(niftyled_CFLAGS)
 AC_SUBST(niftyled_LIBS)
@@ -99,6 +113,7 @@ AC_SUBST(artnet_LIBS)
 # --------------------------------
 #   compile process
 # --------------------------------
+AM_PROG_CC_C_O
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 
@@ -117,9 +132,23 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
+# udev directories
+AC_ARG_WITH(udevdir,
+		AC_HELP_STRING([--with-udevdir=DIR],
+		[install udev helpers [[EPREFIX/lib/udev]]]),
+		udevdir=$withval, udevdir="${udevdir}")
+AC_ARG_WITH(udevruledir,
+		AC_HELP_STRING([--with-udevruledir=DIR],
+		[install udev rules [[UDEVDIR/rules.d]]]),
+		udevruledir=$withval, udevruledir='${udevdir}/rules.d')
+AC_SUBST(udevdir)
+AC_SUBST(udevruledir)
+
+
 # always build dummy/example plugin
 NL_WANT_PLUGIN_DUMMY=true
 AM_CONDITIONAL(NL_PLUGIN_DUMMY, test x$NL_WANT_PLUGIN_DUMMY = xtrue)
+
 
 # LPD8806 SPI plugin argument
 AC_ARG_ENABLE(
@@ -129,6 +158,7 @@ AC_ARG_ENABLE(
 	[NL_WANT_PLUGIN_LPD8806_SPI=true])
 AM_CONDITIONAL(NL_PLUGIN_LPD8806_SPI, test x$NL_WANT_PLUGIN_LPD8806_SPI = xtrue)
 
+
 # arduino 72xx serial plugin argument
 AC_ARG_ENABLE(
 	plugin-arduino-72xx,
@@ -137,6 +167,7 @@ AC_ARG_ENABLE(
 	[NL_WANT_PLUGIN_ARDUINO_72XX=true])
 AM_CONDITIONAL(NL_PLUGIN_ARDUINO_72XX, test x$NL_WANT_PLUGIN_ARDUINO_72XX = xtrue && test $HAVE_USB -eq 1)
 
+
 # niftylino plugin argument
 AC_ARG_ENABLE(
 	plugin-niftylino,
@@ -144,6 +175,7 @@ AC_ARG_ENABLE(
 	[ if test x$enableval = xno ; then NL_WANT_PLUGIN_NIFTYLINO=false ; else if test $HAVE_USB -eq 1 ; then NL_WANT_PLUGIN_NIFTYLINO=true ; else AC_MSG_ERROR([Build of niftylinio USB plugin requested but libusb headers not found.]) ; fi ; fi ],
 	[NL_WANT_PLUGIN_NIFTYLINO=true])
 AM_CONDITIONAL([NL_PLUGIN_NIFTYLINO], test x$NL_WANT_PLUGIN_NIFTYLINO = xtrue && test $HAVE_USB -eq 1)
+
 
 # libartnet plugin argument
 AC_ARG_ENABLE(
@@ -154,7 +186,6 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(NL_PLUGIN_ARTNET, test x$NL_WANT_PLUGIN_ARTNET = xtrue && test $HAVE_ARTNET -eq 1)
 
 
-
 # --------------------------------
 # Build string with plugins to build
 # --------------------------------
@@ -163,6 +194,16 @@ if test "x$NL_WANT_PLUGIN_ARDUINO_72XX" = "xtrue" && test $HAVE_USB -eq 1 ; then
 if test "x$NL_WANT_PLUGIN_NIFTYLINO" = "xtrue" && test $HAVE_USB -eq 1 ; then BUILD_PLUGINS="niftylino $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_ARTNET" = "xtrue" && test $HAVE_ARTNET -eq 1 ; then BUILD_PLUGINS="artnet $BUILD_PLUGINS" ; fi
 if test "x$NL_WANT_PLUGIN_LPD8806_SPI" = "xtrue" ; then BUILD_PLUGINS="LPD8806-SPI $BUILD_PLUGINS" ; fi
+
+
+# --------------------------------
+# Build udev report string
+# --------------------------------
+if test "x$HAVE_UDEV" = "x1" ; then 
+    UDEV_REPORT="yes\n\t udev dir...................:  ${udevdir}\n\t udev rules dir.............:  ${udevruledir}" 
+else 
+    UDEV_REPORT="no" 
+fi
 
 
 # --------------------------------
@@ -183,6 +224,7 @@ AC_CONFIG_FILES([
 	plugins/artnet/tests/Makefile
 	plugins/niftylino/Makefile
 	plugins/niftylino/src/Makefile
+	plugins/niftylino/udev/Makefile
 	plugins/niftylino/tests/Makefile
 	plugins/LPD8806-SPI/Makefile
 	plugins/LPD8806-SPI/src/Makefile
@@ -192,21 +234,22 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 
-echo "
+echo -e "
 Configure report:
 
-    Package.....................:  ${PACKAGE_STRING}
-    Description.................:  ${PACKAGE_DESCRIPTION}
-    Revision....................:  ${PACKAGE_GIT_VERSION}
-    URL.........................:  ${PACKAGE_URL}
-    Bugreports..................:  ${PACKAGE_BUGREPORT}
+\tPackage.....................:  ${PACKAGE_STRING}
+\tDescription.................:  ${PACKAGE_DESCRIPTION}
+\tRevision....................:  ${PACKAGE_GIT_VERSION}
+\tURL.........................:  ${PACKAGE_URL}
+\tBugreports..................:  ${PACKAGE_BUGREPORT}
 
-    Install prefix..............:  ${prefix}
-    C compiler..................:  ${CC}
-    C++ compiler................:  ${CPP}
-    System CFLAGS...............:  ${CFLAGS}
-    System CXXFLAGS.............:  ${CXXFLAGS}
-    System LDFLAGS..............:  ${LDFLAGS}
+\tInstall prefix..............:  ${prefix}
+\tC compiler..................:  ${CC}
+\tC++ compiler................:  ${CPP}
+\tSystem CFLAGS...............:  ${CFLAGS}
+\tSystem CXXFLAGS.............:  ${CXXFLAGS}
+\tSystem LDFLAGS..............:  ${LDFLAGS}
 
-    Building plugins............:  ${BUILD_PLUGINS}
+\tBuilding plugins............:  ${BUILD_PLUGINS}
+\tudev support................:  ${UDEV_REPORT}
 "

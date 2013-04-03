@@ -1,0 +1,1 @@
+SUBSYSTEM=="usb", ATTRS{idVendor}== "0483", ATTRS{idProduct}=="5740", ENV{DEVTYPE}=="usb_device", NAME="bus/usb/$env{BUSNUM}/$env{DEVNUM}", MODE="0666", GROUP="plugdev"

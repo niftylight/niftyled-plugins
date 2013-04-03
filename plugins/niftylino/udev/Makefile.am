@@ -3,11 +3,8 @@
 # v0.4 - Daniel Hiepler <daniel@niftylight.de>
 
 
-if NL_PLUGIN_NIFTYLINO
+udevrule_DATA = \
+	40-niftylino.rules
 
-
-# subdirs to build
-SUBDIRS = src udev tests
-
-
-endif
+EXTRA_DIST = \
+	$(udevrule_DATA)
