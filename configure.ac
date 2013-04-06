@@ -52,7 +52,8 @@ AM_PROG_LIBTOOL
 # -----------------------------------------------
 # Checks for programs.
 # -----------------------------------------------
-PKG_PROG_PKG_CONFIG([0.28])
+dnl change this to 0.28 as soon as it's widely used. Then also delete m4/pkg.m4
+PKG_PROG_PKG_CONFIG([0.25])
 if test -z "${PKG_CONFIG}" ; then
   AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/ or check your distribution.])
 fi
