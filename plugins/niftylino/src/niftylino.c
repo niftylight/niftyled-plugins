@@ -184,11 +184,11 @@ static NftResult _init(void **privdata, LedHardware * hw)
 
         /* enable debugging */
         int level = 0;
-        if(nft_log_level_get() >= L_DEBUG)
+        if(nft_log_level_is_noisier_than(nft_log_level_get(), L_VERBOSE))
                 level = 3;
-        else if(nft_log_level_get() >= L_VERBOSE)
+        else if(nft_log_level_is_noisier_than(nft_log_level_get(), L_INFO))
                 level = 2;
-        else if(nft_log_level_get() >= L_WARNING)
+        else if(nft_log_level_is_noisier_than(nft_log_level_get(), L_ERROR))
                 level = 1;
 
         usb_set_debug(level);

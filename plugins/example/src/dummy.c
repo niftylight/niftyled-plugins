@@ -361,7 +361,7 @@ NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
         NFT_LOG(L_VERBOSE, "Sending dummy data");
 
         /* do nothing if greyscale-values are not printed */
-        if(nft_log_level_get() > L_DEBUG)
+        if(nft_log_level_is_noisier_than(L_DEBUG, nft_log_level_get()))
                 return NFT_SUCCESS;
 
         /* print all greyscale-values */
