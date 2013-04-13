@@ -364,56 +364,10 @@ NftResult _send(void *privdata, LedChain * c, LedCount count, LedCount offset)
         if(nft_log_level_is_noisier_than(L_VERBOSE, nft_log_level_get()))
                 return NFT_SUCCESS;
 
-        /* print all greyscale-values */
-        NFT_LOG(L_DEBUG, "Greyscale-Buffer:");
+        /* print buffer */
+        led_chain_print_buffer(c, L_DEBUG);
 
-        char *buffer = led_chain_get_buffer(c);
-        LedCount i, a;
-        int pos;
-        static char string[512];
-        char *b = buffer;
 
-	    /* print 10 values per line */
-        for(a = offset; a < count / 10; a++)
-        {
-                char *tmp = string;
-                size_t size = sizeof(string);
-
-                for(i = 0; i < 10; i++)
-                {
-                        // if(tmp >= string+count)
-                        // return NFT_SUCCESS;
-
-                        if((pos = snprintf(tmp, size, "0x%.2hhx ", *b++)) < 0)
-                        {
-                                NFT_LOG_PERROR("snprintf()");
-                                return NFT_FAILURE;
-                        }
-
-                        tmp += pos;
-                        size -= pos;
-                }
-
-                NFT_LOG(L_DEBUG, "%s", string);
-        }
-
-	    /* print remaining values */
-	    char *tmp = string;
-	    size_t size = sizeof(string);
-	    for(; a < count % 10; a++)
-	    {
-               if((pos = snprintf(tmp, size, "0x%.2hhx ", *b++)) < 0)
-			   {
-                        NFT_LOG_PERROR("snprintf()");
-				        return NFT_FAILURE;
-			   }
-
-			   tmp += pos;
-			   size -= pos;
-		}
-
-	    NFT_LOG(L_DEBUG, "%s", string);
-	
         /* send chainbuffer to hardware */
         NFT_LOG(L_DEBUG, "Sent %d LED values to dummy hardware",
                 led_chain_get_ledcount(c));
