@@ -163,14 +163,14 @@ static NftResult _hw_init(void *privdata, const char *id)
 
         /* dummy should support any format but in theory, you could check like
          * this ... */
-        // if(strcmp(fmtstring, "RGB u8") != 0)
-        // return NFT_FAILURE;
+        //~ if(strcmp(fmtstring, "RGB u8") != 0)
+        //~ return NFT_FAILURE;
 
         /* ...or this ... */
-        // LedPixelFormat *format = led_chain_get_format(chain);
-        // if(led_frame_format_get_bytes_per_pixel(format) ...)
-        // if(led_frame_format_get_n_components(format) ...)
-        // ...
+        //~ LedPixelFormat *format = led_chain_get_format(chain);
+        //~ if(led_frame_format_get_bytes_per_pixel(format) ...)
+        //~ if(led_frame_format_get_n_components(format) ...)
+        //~ ...
 
 
         /* copy our id (and/or change it; check for "*" wildcard) */
@@ -232,9 +232,9 @@ NftResult _get_handler(void *privdata, LedPluginParam o,
                         return NFT_SUCCESS;
                 }
 
-                        /* handle dynamic custom properties - we have to fill
-                         * in data->custom.value.[s|i|f] and
-                         * data->custom.valuesize */
+				/* handle dynamic custom properties - we have to fill
+				 * in data->custom.value.[s|i|f] and
+				 * data->custom.valuesize */
                 case LED_HW_CUSTOM_PROP:
                 {
                         /** foo? */
