@@ -190,10 +190,10 @@ static void _hw_deinit(void *privdata)
 
 
 /**
- * plugin getter - this will be called if core wants to get stuff from the plugin
+ * plugin getter - this will be called if core wants to get a parameter from the plugin
  * @note you don't need to implement a getter for every single LedPluginParam
  */
-NftResult _get_handler(void *privdata, LedPluginParam o,
+NftResult _get_param(void *privdata, LedPluginParam o,
                        LedPluginParamData * data)
 {
         struct priv *p = privdata;
@@ -273,10 +273,10 @@ NftResult _get_handler(void *privdata, LedPluginParam o,
 
 
 /**
- * plugin setter - this will be called if core wants to set stuff
+ * plugin setter - this will be called if core wants to set parameters
  * @note you don't need to implement a setter for every LedPluginParam
  */
-NftResult _set_handler(void *privdata, LedPluginParam o,
+NftResult _set_param(void *privdata, LedPluginParam o,
                        LedPluginParamData * data)
 {
         struct priv *p = privdata;
@@ -419,8 +419,8 @@ LedHardwarePlugin hardware_descriptor = {
         .plugin_deinit = _deinit,
         .hw_init = _hw_init,
         .hw_deinit = _hw_deinit,
-        .get = _get_handler,
-        .set = _set_handler,
+        .get = _get_param,
+        .set = _set_param,
         .show = _show,
         .send = _send,
 };
