@@ -1,6 +1,6 @@
 /*
  * libniftyled - Interface library for LED interfaces
- * Copyright (C) 2010 Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2010-2013 Daniel Hiepler <daniel@niftylight.de>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -400,7 +400,7 @@ LedHardwarePlugin hardware_descriptor = {
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2012",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2012-2013",
         .description = "libartnet hardware plugin",
         .url = PACKAGE_URL,
         .id_example = "127.0.0.1",
