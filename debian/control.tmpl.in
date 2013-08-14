@@ -15,7 +15,7 @@ Depends: @PACKAGE_NAME@ (= ${source:Version})
 Description: @PACKAGE_NAME@ debugging symbols
  @PACKAGE_DESCRIPTION_LONG@
 
-Package: @PACKAGE_NAME@@PACKAGE_MAJOR_VERSION@
+Package: @PACKAGE_NAME@
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
