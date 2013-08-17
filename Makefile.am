@@ -43,7 +43,7 @@ indent:
 # create .deb package
 # needs dpkg-dev, debhelper
 DEBTMPDIR=$(abs_top_builddir)/deb-tmp
-DEBSRCDIR=$(DEBTMPDIR)/@PACKAGE_NAME@-@PACKAGE_VERSION@-@DEBIAN_REVISION@
+DEBSRCDIR=$(DEBTMPDIR)/@PACKAGE_NAME@-@PACKAGE_VERSION@
 deb: dist-gzip
 	@echo "Building Debian package..."; \
 	rm --recursive --force "$(DEBTMPDIR)" ; \
