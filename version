@@ -8,6 +8,10 @@ MAJOR=0
 MINOR=1
 MICRO=1
 
+######################
+# debian revision
+DEBIAN_REVISION=0
+
 
 
 # ----------------------------------------------
@@ -15,7 +19,7 @@ MICRO=1
 # function to print helptext
 function help()
 {
-    echo "$0 --long | --short | --major | --minor | --micro | --git"
+    echo "$0 --long | --short | --major | --minor | --micro | --git | --debian"
 }
 
 # output micro version
@@ -34,6 +38,12 @@ function minor()
 function major()
 {
     echo -n $MAJOR
+}
+
+# output debian revision
+function debian()
+{
+    echo -n $DEBIAN_REVISION
 }
 
 # output git version
@@ -55,9 +65,12 @@ function output_long()
     echo -n $(major).$(minor).$(micro)-$(output_git)
 }
 
+# no arguments?
+if [ -z "$1" ] ; then help ; exit 1 ; fi
+
 # parse cmdline arguments
-TEMP=`getopt -o lsMmug --long long,short,major,minor,micro,git -n "$0" -- "$@"`
-if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+TEMP=`getopt -o lsMmugd --long long,short,major,minor,micro,git,debian -n "$0" -- "$@"`
+if [ $? != 0 ] ; then help ; echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
@@ -82,8 +95,12 @@ while true ; do
         # micro
         -u|--micro) micro ; shift 1 ;;
 
+        # debian revision
+        -d|--debian) debian ; shift 1 ;;
+
         # ?!
         --) shift ; break ;;
-        *) echo "Argument parsing error!" ; exit 1 ;;
+        *) echo "Argument parsing error!" ; help ; exit 1 ;;
     esac
 done
+

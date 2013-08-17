@@ -39,6 +39,7 @@ AC_SUBST([PACKAGE_MAJOR_VERSION], m4_esyscmd([./version --major]), [major versio
 AC_SUBST([PACKAGE_MINOR_VERSION], m4_esyscmd([./version --minor]), [minor version])
 AC_SUBST([PACKAGE_MICRO_VERSION], m4_esyscmd([./version --micro]), [micro version])
 AC_SUBST([PACKAGE_GIT_VERSION], m4_esyscmd([./version --git]), [git version])
+AC_SUBST([DEBIAN_REVISION], m4_esyscmd([./version --debian]), [debian revision])
 
 
 # -----------------------------------------------
@@ -232,9 +233,9 @@ AC_CONFIG_FILES([
 	plugins/LPD8806-SPI/Makefile
 	plugins/LPD8806-SPI/src/Makefile
 	plugins/LPD8806-SPI/tests/Makefile
-        debian/changelog
+	debian/changelog
 	debian/control.tmpl
-        debian/rules.tmpl
+	debian/rules.tmpl
 	gentoo/media-gfx/niftyled-plugins/niftyled-plugins-9999.ebuild])
 AC_OUTPUT
 
