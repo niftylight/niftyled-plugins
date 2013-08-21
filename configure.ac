@@ -26,8 +26,8 @@ AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wno-portab
 # --------------------------------
 
 # infos
-PACKAGE_DESCRIPTION="libniftyled runtime loadabled plugins"
-PACKAGE_DESCRIPTION_LONG="libniftyled runtime loadabled plugins that provide support for various lighting hardware interfaces"
+PACKAGE_DESCRIPTION="libniftyled runtime loadable plugins"
+PACKAGE_DESCRIPTION_LONG="libniftyled runtime loadable plugins that provide support for various lighting hardware interfaces"
 
 AC_SUBST([PACKAGE_DESCRIPTION], [${PACKAGE_DESCRIPTION}], [package description])
 AC_SUBST([PACKAGE_DESCRIPTION_LONG], [${PACKAGE_DESCRIPTION_LONG}], [long package description])
@@ -236,6 +236,7 @@ AC_CONFIG_FILES([
 	debian/changelog
 	debian/control.tmpl
 	debian/rules.tmpl
+	debian/watch
 	gentoo/media-gfx/niftyled-plugins/niftyled-plugins-9999.ebuild])
 AC_OUTPUT
 
