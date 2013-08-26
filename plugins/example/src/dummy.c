@@ -399,11 +399,11 @@ LedHardwarePlugin hardware_descriptor = {
         /** family name of the plugin (lib{family}-hardware.so) */
         .family = "dummy",
         /** api major version */
-        .api_major = HW_PLUGIN_API_MAJOR_VERSION,
+        .api_major = LED_HW_PLUGIN_API_MAJOR_VERSION,
         /** api minor version */
-        .api_minor = HW_PLUGIN_API_MINOR_VERSION,
+        .api_minor = LED_HW_PLUGIN_API_MINOR_VERSION,
         /** api micro version */
-        .api_micro = HW_PLUGIN_API_MICRO_VERSION,
+        .api_micro = LED_HW_PLUGIN_API_MICRO_VERSION,
         /** plugin version major */
         .major_version = 0,
         /** plugin version minor */
