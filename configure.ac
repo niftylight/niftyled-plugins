@@ -65,7 +65,6 @@ fi
 # --------------------------------
 
 PKG_CHECK_VAR(udevdir, [udev], [udevdir], [HAVE_UDEV=1], [HAVE_UDEV=0])
-AC_SUBST(HAVE_UDEV)
 
 PKG_CHECK_MODULES(niftyled, [niftyled], [], [AC_MSG_ERROR([You need libniftyled + development headers installed])])
 AC_SUBST(niftyled_CFLAGS)
@@ -127,7 +126,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_ARG_ENABLE(
         debug,
 		AS_HELP_STRING([--enable-debug], [enable debugging, default: no]),
-		[case "${enableval}" in
+		[case "$enableval" in
              yes) debug=true ;;
              no)  debug=false ;;
              *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
@@ -136,17 +135,38 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
+# udev
+echo "----> UDEV: $HAVE_UDEV"
+AC_ARG_ENABLE(
+	udev,
+		AS_HELP_STRING([--enable-udev], [enable udev support, default: yes - if udev is found]),
+		[case "$enableval" in
+	     yes) have_udev=$HAVE_UDEV ;;
+	     no)  have_udev=0 ;;
+             *)   AC_MSG_ERROR([bad value ${enableval} for --enable-udev]) ;;
+                esac],
+		[have_udev=$HAVE_UDEV])
+AM_CONDITIONAL(HAVE_UDEV, test x$have_udev = "x1")
+
+
 # udev directories
+if test "$prefix" = "/usr" -o "$prefix" = "/usr/local" -o "$prefix" = "NONE" ; then
+	t_udevdir="$udevdir"
+else
+	t_udevdir="$prefix/lib/udev"
+fi
+
 AC_ARG_WITH(udevdir,
-		AC_HELP_STRING([--with-udevdir=DIR],
-		[install udev helpers [[EPREFIX/lib/udev]]]),
-		udevdir=$withval, udevdir="${udevdir}")
+	AC_HELP_STRING([--with-udevdir=DIR],
+	[install udev helpers [[EPREFIX/lib/udev]]]),
+	udevdir=$withval, udevdir="$t_udevdir")
 AC_ARG_WITH(udevruledir,
-		AC_HELP_STRING([--with-udevruledir=DIR],
-		[install udev rules [[UDEVDIR/rules.d]]]),
-		udevruledir=$withval, udevruledir='${udevdir}/rules.d')
+	AC_HELP_STRING([--with-udevruledir=DIR],
+	[install udev rules [[UDEVDIR/rules.d]]]),
+	udevruledir=$withval, udevruledir="${udevdir}/rules.d")
 AC_SUBST(udevdir)
 AC_SUBST(udevruledir)
+
 
 
 # always build dummy/example plugin
@@ -203,7 +223,7 @@ if test "x$NL_WANT_PLUGIN_LPD8806_SPI" = "xtrue" ; then BUILD_PLUGINS="LPD8806-S
 # --------------------------------
 # Build udev report string
 # --------------------------------
-if test "x$HAVE_UDEV" = "x1" ; then 
+if test "x$have_udev" = "x1" ; then 
     UDEV_REPORT="yes\n\t udev dir...................:  ${udevdir}\n\t udev rules dir.............:  ${udevruledir}" 
 else 
     UDEV_REPORT="no" 

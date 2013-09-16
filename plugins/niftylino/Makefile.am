@@ -9,5 +9,4 @@ if NL_PLUGIN_NIFTYLINO
 # subdirs to build
 SUBDIRS = src udev tests
 
-
 endif
