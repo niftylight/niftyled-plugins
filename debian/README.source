@@ -1,4 +1,15 @@
-niftyled-plugins for Debian
----------------------------
+Niftyled runtime loadable plugins (Debian package)
+==================================================
 
-niftyled-plugins source package. More information at http://wiki.niftylight.de/libniftyled-plugins
+niftyled-plugins source package.
+
+
+
+------------------------------------------------------------------------------
+
+Project page:	http://wiki.niftylight.de/niftyled-plugins
+Sourcecode:	http://github.com/niftylight/niftyled-plugins  
+Issue tracker:	http://github.com/niftylight/niftyled-plugins/issues  
+Mailinglist:	niftyled@googlegroups.com  
+IRC chat:	irc://irc.freenode.net/niftylight
+
