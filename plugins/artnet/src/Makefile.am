@@ -18,14 +18,14 @@ INCLUDE_DIRS = \
 
 
 # target library
-lib_LTLIBRARIES=artnet-hardware.la
+lib_LTLIBRARIES=udp_artnet-hardware.la
 
 # sources
-artnet_hardware_la_SOURCES = \
+udp_artnet_hardware_la_SOURCES = \
 	artnet.c
 
 # cflags
-artnet_hardware_la_CFLAGS = \
+udp_artnet_hardware_la_CFLAGS = \
 	$(INCLUDE_DIRS) \
 	$(niftyled_CFLAGS) \
 	$(artnet_CFLAGS) \
@@ -33,13 +33,13 @@ artnet_hardware_la_CFLAGS = \
 	$(DEBUG_CFLAGS)
 
 # link in additional libraries
-artnet_hardware_la_LIBADD = \
+udp_artnet_hardware_la_LIBADD = \
 	$(niftyled_LIBS) \
 	$(artnet_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
-artnet_hardware_la_LDFLAGS = \
+udp_artnet_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
 	-no-allow-shlib-undefined \
 	-module -avoid-version

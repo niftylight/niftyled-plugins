@@ -21,26 +21,26 @@ EXTRA_DIST = \
 	lpd8806-spi.h
 
 # target library
-lib_LTLIBRARIES = lpd8806-spi-hardware.la
+lib_LTLIBRARIES = spi_lpd8806-hardware.la
 
 # sources
-lpd8806_spi_hardware_la_SOURCES = \
+spi_lpd8806_hardware_la_SOURCES = \
 	lpd8806-spi.c
 
 # cflags
-lpd8806_spi_hardware_la_CFLAGS = \
+spi_lpd8806_hardware_la_CFLAGS = \
 	$(INCLUDE_DIRS) \
 	$(niftyled_CFLAGS) \
 	$(COMMON_CFLAGS_N) \
 	$(DEBUG_CFLAGS)
 
 # link in additional libraries
-lpd8806_spi_hardware_la_LIBADD = \
+spi_lpd8806_hardware_la_LIBADD = \
 	$(niftyled_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
-lpd8806_spi_hardware_la_LDFLAGS = \
+spi_lpd8806_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
 	-no-allow-shlib-undefined \
 	-module -avoid-version

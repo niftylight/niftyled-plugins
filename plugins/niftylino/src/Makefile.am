@@ -22,14 +22,14 @@ EXTRA_DIST = \
 	niftylino_usb.h
 
 # target library
-lib_LTLIBRARIES=niftylino-hardware.la
+lib_LTLIBRARIES=usb_niftylino-hardware.la
 
 # sources
-niftylino_hardware_la_SOURCES = \
+usb_niftylino_hardware_la_SOURCES = \
 	niftylino.c
 
 # cflags
-niftylino_hardware_la_CFLAGS = \
+usb_niftylino_hardware_la_CFLAGS = \
 	$(INCLUDE_DIRS) \
 	$(niftyled_CFLAGS) \
 	$(usb_CFLAGS) \
@@ -37,13 +37,13 @@ niftylino_hardware_la_CFLAGS = \
 	$(DEBUG_CFLAGS)
 
 # link in additional libraries
-niftylino_hardware_la_LIBADD = \
+usb_niftylino_hardware_la_LIBADD = \
 	$(niftyled_LIBS) \
 	$(usb_LIBS) \
 	$(COMMON_LIBS_N)
 
 # linker flags
-niftylino_hardware_la_LDFLAGS = \
+usb_niftylino_hardware_la_LDFLAGS = \
 	$(COMMON_LDFLAGS_N) \
 	-no-allow-shlib-undefined \
 	-module -avoid-version

@@ -386,7 +386,7 @@ NftResult _show(void *privdata)
 /** descriptor of hardware-plugin passed to the library */
 LedHardwarePlugin hardware_descriptor = {
         /** family name of the plugin (lib{family}-hardware.so) */
-        .family = "artnet",
+        .family = "udp_artnet",
         /** api major version */
         .api_major = LED_HW_PLUGIN_API_MAJOR_VERSION,
         /** api minor version */
