@@ -1,6 +1,6 @@
 Source: @PACKAGE_NAME@
 Priority: optional
-Maintainer: Daniel Hiepler <daniel-ubuntu@niftylight.de>
+Maintainer: Daniel Hiepler <daniel-debian@niftylight.de>
 Build-Depends: debhelper (>= 9), autotools-dev, libc6-dev, libniftyled-dev, libniftylog-dev, libusb-dev
 Standards-Version: 3.9.4
 Section: libs
