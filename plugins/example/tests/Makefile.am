@@ -24,7 +24,7 @@ tests_LIBADD_PRIV = \
 # test-target
 check_PROGRAMS = generic send
 TESTS = $(check_PROGRAMS)
-TESTS_ENVIRONMENT = $(srcdir)/tests.env
+AM_TESTS_ENVIRONMENT = $(srcdir)/tests.env;
 
 generic_SOURCES = generic.c
 generic_CFLAGS = $(tests_CFLAGS_PRIV)

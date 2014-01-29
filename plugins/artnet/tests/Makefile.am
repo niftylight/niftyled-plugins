@@ -22,7 +22,7 @@ tests_LIBADD_PRIV = \
 # test-target
 #check_PROGRAMS = generic
 #TESTS = $(check_PROGRAMS)
-#TESTS_ENVIRONMENT = ./tests.env
+#AM_TESTS_ENVIRONMENT = ./tests.env;
 #EXTRA_DIST = tests.env
 
 #generic_SOURCES = generic.c
