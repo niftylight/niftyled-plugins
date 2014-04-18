@@ -136,7 +136,6 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 
 # udev
-echo "----> UDEV: $HAVE_UDEV"
 AC_ARG_ENABLE(
 	udev,
 		AS_HELP_STRING([--enable-udev], [enable udev support, default: yes - if udev is found]),
