@@ -1,6 +1,6 @@
 #############
 # libniftyled plugins configure.ac
-# v0.5 - (c) Daniel Hiepler (2010-2013)
+# v0.5 - (c) Daniel Hiepler (2010-2014)
 
 
 # --------------------------------
@@ -9,7 +9,7 @@
 
 # package info
 AC_INIT([niftyled-plugins], m4_esyscmd([./version --short]), [http://github.com/niftylight/niftyled-plugins/issues], [niftyled-plugins], http://wiki.niftylight.de/Hardware-plugins)
-AC_COPYRIGHT([Copyright (C) 2006-2013 Daniel Hiepler])
+AC_COPYRIGHT([Copyright (C) 2006-2014 Daniel Hiepler])
 
 # for cross compiling
 AC_CANONICAL_SYSTEM

@@ -1,6 +1,6 @@
 /*
  * libniftyled - Interface library for LED interfaces
- * Copyright (C) 2010-2013 Daniel Hiepler <daniel@niftylight.de>
+ * Copyright (C) 2010-2014 Daniel Hiepler <daniel@niftylight.de>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -620,7 +620,7 @@ LedHardwarePlugin hardware_descriptor = {
         /** plugin version micro */
         .micro_version = 1,
         .license = "GPL",
-        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2013",
+        .author = "Daniel Hiepler <daniel@niftylight.de> (c) 2011-2014",
         .description =
                 "Plugin to control MAX7219/MAX7221 and compatible connected to an arduino through a virtual serial port",
         .url = PACKAGE_URL,
