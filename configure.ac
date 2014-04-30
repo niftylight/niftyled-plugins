@@ -16,6 +16,7 @@ AC_CANONICAL_SYSTEM
 
 # autotools initialization
 AC_LANG(C)
+AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([color-tests dist-bzip2 parallel-tests silent-rules -Wno-portability -Wall])
 
@@ -45,6 +46,7 @@ AC_SUBST([DEBIAN_REVISION], m4_esyscmd([./version --debian]), [debian revision])
 # -----------------------------------------------
 #    libtool stuff
 # -----------------------------------------------
+AM_PROG_AR
 LT_INIT
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
