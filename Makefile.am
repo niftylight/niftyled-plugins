@@ -52,7 +52,7 @@ deb: dist-gzip
 	mkdir -p "$(DEBTMPDIR)" && \
 	mv "$(top_builddir)/@PACKAGE@-@PACKAGE_VERSION@.tar.gz" "$(TARGZFILE)" && \
 	tar --directory "$(DEBTMPDIR)/" --extract --gunzip --file "$(TARGZFILE)" && \
-	cp -r "$(top_builddir)/debian/"* "$(DEBSRCDIR)/debian" && \
+	cp -r "$(top_builddir)/dist/debian/"* "$(DEBSRCDIR)/debian" && \
 	mv "$(DEBSRCDIR)/debian/rules.tmpl"                 "$(DEBSRCDIR)/debian/rules" && \
 	mv "$(DEBSRCDIR)/debian/control.tmpl"               "$(DEBSRCDIR)/debian/control" && \
 	cd "$(DEBSRCDIR)" && \
