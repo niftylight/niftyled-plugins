@@ -13,8 +13,7 @@ SUBDIRS = plugins
 
 EXTRA_DIST = \
 	Makefile.global.am \
-	gentoo \
-	debian \
+	dist \
 	version
 
 # files to clean on "make distclean"
