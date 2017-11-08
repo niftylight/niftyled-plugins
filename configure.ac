@@ -254,11 +254,11 @@ AC_CONFIG_FILES([
 	plugins/LPD8806-SPI/Makefile
 	plugins/LPD8806-SPI/src/Makefile
 	plugins/LPD8806-SPI/tests/Makefile
-	debian/changelog
-	debian/control.tmpl
-	debian/rules.tmpl
-	debian/watch
-	gentoo/media-gfx/niftyled-plugins/niftyled-plugins-9999.ebuild])
+	dist/debian/changelog
+	dist/debian/control.tmpl
+	dist/debian/rules.tmpl
+	dist/debian/watch
+])
 AC_OUTPUT
 
 
